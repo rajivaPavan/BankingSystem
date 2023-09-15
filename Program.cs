@@ -1,4 +1,6 @@
 using BankingSystem.DBContext;
+using BankingSystem.DbOperations;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +10,13 @@ var services = builder.Services;
 services.AddControllersWithViews();
 services.AddSingleton<AppDbContext>(_ => 
     new AppDbContext(builder.Configuration.GetConnectionString("Default")));
+
+services.AddScoped<IAccountRepository, AccountRepository>();
+
+// https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-6.0
+// https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-7.0
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
 var app = builder.Build();
 
@@ -24,7 +33,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+// app.MapRazorPages();
+app.MapDefaultControllerRoute();
 
 app.MapControllerRoute(
     name: "default",

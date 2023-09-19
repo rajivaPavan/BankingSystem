@@ -10,4 +10,6 @@ public class AppDbContext
     {
         _connection = new MySqlConnection(connectionString);
     }
+    
+    public MySqlConnection GetConnection() => _connection;
 }

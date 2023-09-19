@@ -11,7 +11,7 @@ services.AddControllersWithViews();
 services.AddSingleton<AppDbContext>(_ => 
     new AppDbContext(builder.Configuration.GetConnectionString("Default")));
 
-services.AddScoped<IAccountRepository, AccountRepository>();
+services.AddScoped<IUserRepository, UserRepository>();
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-7.0

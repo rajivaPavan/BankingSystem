@@ -7,8 +7,10 @@ namespace BankingSystem.DbOperations;
 
 public interface IUserRepository : IRepository<User>
 {
-    Task<User> AuthenticateUser(string username, string password);
+    Task<User?> AuthenticateUser(string username, string password);
+    Task SignInAsync(User user);
     Task<IEnumerable<UserRole>> GetUserRoles(int userId);
+    Task SetOTP(int userId);
 }
 
 public class UserRepository : Repository<User>, IUserRepository
@@ -45,7 +47,7 @@ public class UserRepository : Repository<User>, IUserRepository
         throw new NotImplementedException();
     }
 
-    public async Task<User> AuthenticateUser(string username, string password)
+    public async Task<User?> AuthenticateUser(string username, string password)
     {
         var connection = _dbContext.GetConnection();
         using var cmd = connection.CreateCommand();
@@ -54,8 +56,23 @@ public class UserRepository : Repository<User>, IUserRepository
         cmd.Parameters.AddWithValue("u", username);
         cmd.Parameters.AddWithValue("p", password);
         var reader = await cmd.ExecuteReaderAsync();
-        var res = await Read<User>(reader);
-        return res.ElementAt(0);
+        IEnumerable<User?> res = await Read<User>(reader);
+        return res.FirstOrDefault();
+    }
+
+    public async Task SignInAsync(User user)
+    {
+        var connection = _dbContext.GetConnection();
+        await using var cmd = connection.CreateCommand();
+        // set last login time
+        cmd.CommandText = @"UPDATE user SET LastLogin = @l, OTP = @o WHERE UserId = @u;";
+        cmd.Parameters.AddWithValue("l", DateTime.Now);
+        cmd.Parameters.AddWithValue("o", new Random().Next(100000, 999999));
+        cmd.Parameters.AddWithValue("u", user.UserId);
+        await cmd.ExecuteNonQueryAsync();
+        
+        // also set an OTP for the session
+        await SetOTP(user.UserId);
     }
 
     public async Task<IEnumerable<UserRole>> GetUserRoles(int userId)
@@ -70,5 +87,15 @@ public class UserRepository : Repository<User>, IUserRepository
         var reader = await cmd.ExecuteReaderAsync();
         var res = await Read<UserRole>(reader);
         return res;
+    }
+
+    public async Task SetOTP(int userId)
+    {
+        var connection = _dbContext.GetConnection();
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = @"UPDATE user SET OTP = @o WHERE UserId = @u;";
+        cmd.Parameters.AddWithValue("o", new Random().Next(100000, 999999));
+        cmd.Parameters.AddWithValue("u", userId);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

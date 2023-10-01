@@ -17,6 +17,8 @@ public class AccountController : Controller
     [HttpGet]
     public async Task<IActionResult> Login()
     {
+        if (HttpContext!.User.Identity!.IsAuthenticated)
+            return RedirectToAction("Index", "Home");
         return View();
     }
 
@@ -37,6 +39,8 @@ public class AccountController : Controller
     
     public async Task<IActionResult> Logout()
     {
+        if (!HttpContext!.User.Identity!.IsAuthenticated) 
+            return Ok();
         await _authService.Logout();
         return RedirectToAction("Index", "Home");
     }

@@ -1,5 +1,4 @@
-﻿using System.Data.Common;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
 using Microsoft.AspNetCore.Authentication;
@@ -32,6 +31,10 @@ public class AuthenticationService : IAuthenticationService
         // check in db
         await _dbContext.GetConnection().OpenAsync();
         var user = await _userRepository.AuthenticateUser(username, password);
+        
+        if(user == null) return false;
+        
+        await _userRepository.SignInAsync(user);
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, username),

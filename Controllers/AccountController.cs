@@ -1,6 +1,7 @@
 ﻿using BankingSystem.DbOperations;
 using BankingSystem.Services;
 using BankingSystem.ViewModels;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingSystem.Controllers;
@@ -39,9 +40,8 @@ public class AccountController : Controller
     
     public async Task<IActionResult> Logout()
     {
-        if (!HttpContext!.User.Identity!.IsAuthenticated) 
-            return Ok();
-        await _authService.Logout();
+        if (HttpContext!.User.Identity!.IsAuthenticated) 
+            await _authService.Logout();
         return RedirectToAction("Index", "Home");
     }
 }

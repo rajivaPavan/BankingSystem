@@ -21,11 +21,23 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(LoginViewModel model)
+    public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
     {
-        // Use the injected IUserRepository to check if the user exists
-        var user = _authService.Login(model.Username, model.Password);
+        var user = await _authService.Login(model.Username, model.Password);
 
+        if (user == false)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return View();
+        }
+
+        return RedirectToAction("Index", "Home");
+
+    }
+    
+    public async Task<IActionResult> Logout()
+    {
+        await _authService.Logout();
         return RedirectToAction("Index", "Home");
     }
 }

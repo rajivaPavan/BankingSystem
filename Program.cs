@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var services = builder.Services;
 services.AddControllersWithViews();
+services.AddHttpContextAccessor();
 services.AddSingleton<AppDbContext>(_ => 
     new AppDbContext(builder.Configuration.GetConnectionString("Default")));
 

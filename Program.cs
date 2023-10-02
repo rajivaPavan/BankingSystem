@@ -1,5 +1,6 @@
 using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
+using BankingSystem.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MySqlConnector;
 
@@ -8,10 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var services = builder.Services;
 services.AddControllersWithViews();
+services.AddHttpContextAccessor();
 services.AddSingleton<AppDbContext>(_ => 
     new AppDbContext(builder.Configuration.GetConnectionString("Default")));
 
-services.AddScoped<IAccountRepository, AccountRepository>();
+services.AddScoped<IUserRepository, UserRepository>();
+services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-7.0

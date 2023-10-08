@@ -1,0 +1,27 @@
+﻿@{
+    ViewBag.Title = "Individual Customers";
+    Layout = "_Layout";
+}
+
+<h2>Individual Customers</h2>
+<div class="">
+    <form class="form-inline" onsubmit="onSubmit()">
+        <div class="form-row">
+            <input type="text" class="col-4 form-control mb-2 mr-sm-2"
+                   id="nic" placeholder="NIC">
+            <input type="submit" class="col-2 btn btn-primary mb-2" value="Search">
+        </div>
+    </form>
+    <script>
+        function onSubmit(e){
+            e.preventDefault()
+            const nic = $("#nic").val();
+            if (nic) {
+                window.location.href = `/bank/customers/individuals/${nic}`;
+            }
+            else{
+                alert("Please enter a NIC");
+            }
+        }
+    </script>
+</div>

@@ -13,7 +13,7 @@ public interface IUserRepository : IRepository<User>
     Task SetOTP(int userId);
 }
 
-public class UserRepository : Repository<User>, IUserRepository
+public class UserRepository : Repository, IUserRepository
 {
     private readonly AppDbContext _dbContext;
 

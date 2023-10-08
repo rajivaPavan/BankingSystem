@@ -12,7 +12,7 @@ public interface IRepository<T>
     Task DeleteAsync(int id);
 }
 
-public abstract class Repository<T>
+public abstract class Repository
 {
     private static T ReadSingle<T>(MySqlDataReader reader) where T : new()
     {

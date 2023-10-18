@@ -1,0 +1,28 @@
+﻿@model SelfRegistrationViewModel
+
+@{
+    ViewBag.Title = "Customer Self Register";
+    Layout = "Layout";
+}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title font-weight-bold">Self Registration Form</h3>
+            <p class="card-text">For security purposes, your NIC and mobile number are required.</p>
+            <form asp-controller="Account" asp-action="CustomerSelfRegister">
+                <div class="mb-3">
+                    <label for="nic" class="form-label">NIC (National Identity Card)</label>
+                    <input asp-for="NIC" type="text" class="form-control" id="nic" name="nic" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="mobile" class="form-label">Mobile Phone Number</label>
+                    <input asp-for="MobileNumber" type="tel" class="form-control" id="mobile" name="mobile" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>

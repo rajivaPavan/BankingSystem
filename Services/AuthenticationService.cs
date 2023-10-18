@@ -31,17 +31,22 @@ public class AuthenticationService : IAuthenticationService
         // check in db
         await _dbContext.GetConnection().OpenAsync();
         var user = await _userRepository.AuthenticateUser(username, password);
-        
-        if(user == null) return false;
+
+        if (user == null)
+        {
+            await _dbContext.GetConnection().CloseAsync();
+            return false;
+        }
         
         await _userRepository.SignInAsync(user);
+        await _dbContext.GetConnection().CloseAsync();
+
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, username),
         };
 
-        var roles = await _userRepository.GetUserRoles(user.UserId);
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.Name)));
+        claims.AddRange(new[] {new Claim(ClaimTypes.Role, user.UserType.ToString())});
 
         var claimsIdentity = new ClaimsIdentity(
             claims, CookieAuthenticationDefaults.AuthenticationScheme);

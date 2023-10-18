@@ -1,11 +1,17 @@
 ﻿namespace BankingSystem.Models;
 
+public enum UserType
+{
+    Individual,
+    Organization
+}
+
 public class User
 {
     public int UserId { get; set; }
-    public string Username { get; set; }
-    public string Email { get; set; }
-    
+    public string UserName { get; set; }
+    public UserType UserType { get; set; }
+    public DateTime LastLoginTimestamp { get; set; }
 }
 
 public class UserRole

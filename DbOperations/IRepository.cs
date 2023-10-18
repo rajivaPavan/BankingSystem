@@ -12,7 +12,7 @@ public interface IRepository<T>
     Task DeleteAsync(int id);
 }
 
-public abstract class Repository<T>
+public abstract class Repository
 {
     private static T ReadSingle<T>(MySqlDataReader reader) where T : new()
     {
@@ -26,6 +26,8 @@ public abstract class Repository<T>
         {
             // Get the column name and value from the reader
             string columnName = reader.GetName(i);
+            // CHANGE columnName from snake_case to PascalCase
+            columnName = string.Concat(columnName.Split('_').Select(s => char.ToUpper(s[0]) + s.Substring(1)));
             object columnValue = reader[i];
 
             // Find a property in the object with the same name as the column

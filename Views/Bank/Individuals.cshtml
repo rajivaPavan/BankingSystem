@@ -1,4 +1,5 @@
-﻿@{
+﻿@model IndividualsViewModel
+@{
     ViewBag.Title = "Individual Customers";
     Layout = "_Layout";
 }
@@ -12,6 +13,33 @@
             <input type="submit" class="col-2 btn btn-primary mb-2" value="Search">
         </div>
     </form>
+    <table id="example2" class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>NIC</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Date of Birth</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Mobile Number</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var individual in Model.Individuals)
+        {
+            <tr>
+                <td>@individual.NIC</td>
+                <td>@individual.FirstName</td>
+                <td>@individual.LastName</td>
+                <td>@individual.DateOfBirth</td>
+                <td>@individual.Email</td>
+                <td>@individual.Gender</td>
+                <td>@individual.MobileNumber</td>
+            </tr>
+        }
+        </tbody>
+    </table>
     <script>
         function onSubmit(e){
             e.preventDefault()

@@ -1,7 +1,6 @@
 ﻿using BankingSystem.DbOperations;
 using BankingSystem.Services;
 using BankingSystem.ViewModels;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingSystem.Controllers;
@@ -44,4 +43,30 @@ public class AccountController : Controller
             await _authService.Logout();
         return RedirectToAction("Index", "Home");
     }
+
+    [HttpGet]
+    public async Task<IActionResult> CustomerSelfRegister()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CustomerSelfRegister(SelfRegistrationViewModel model)
+    {
+        return View(model);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> CustomerFinalizeSelfRegister()
+    {
+        return View();
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> CustomerFinalizeSelfRegister(FinalizeSelfRegisterViewModel model)
+    {
+        return View(model);
+    }
+    
+    
 }

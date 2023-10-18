@@ -1,13 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using BankingSystem.DBContext;
+using BankingSystem.DbOperations;
+using BankingSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingSystem.Controllers;
 
 public class BankController : Controller
 {
-    public BankController()
+    private readonly AppDbContext _context;
+    private readonly IIndividualRepository _individualRepository;
+
+    public BankController(AppDbContext context,
+        IIndividualRepository individualRepository)
     {
-        
+        _context = context;
+        _individualRepository = individualRepository;
     }
     
     public IActionResult Index()
@@ -20,9 +27,17 @@ public class BankController : Controller
     /// provide a link in the view to create a new individual customer.
     /// </summary>
     [Route("[controller]/customers/individuals")]
-    public IActionResult Individuals()
+    public async Task<IActionResult> Individuals()
     {
-        return View();
+        await _context.GetConnection().OpenAsync();
+        var all = await _individualRepository.GetAllAsync();
+        await _context.GetConnection().CloseAsync();
+        
+        IndividualsViewModel model = new()
+        {
+            Individuals = all
+        };
+        return View(model);
     }
     
     /// <summary>
@@ -42,6 +57,7 @@ public class BankController : Controller
     [HttpPost]
     public IActionResult CreateIndividual()
     {
+        
         return View();
     }
     

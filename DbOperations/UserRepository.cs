@@ -1,7 +1,6 @@
-﻿using System.Collections;
-using BankingSystem.DBContext;
+﻿using BankingSystem.DBContext;
 using BankingSystem.Models;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
+using MySqlConnector;
 
 namespace BankingSystem.DbOperations;
 
@@ -9,8 +8,6 @@ public interface IUserRepository : IRepository<User>
 {
     Task<User?> AuthenticateUser(string username, string password);
     Task SignInAsync(User user);
-    Task<IEnumerable<UserRole>> GetUserRoles(int userId);
-    Task SetOTP(int userId);
 }
 
 public class UserRepository : Repository, IUserRepository
@@ -42,9 +39,27 @@ public class UserRepository : Repository, IUserRepository
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        var connection = _dbContext.GetConnection();
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = @"DELETE FROM user WHERE user_id = @u;";
+        cmd.Parameters.AddWithValue("u", id);
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    private async Task<User?> ReadUserAsync(MySqlDataReader reader)
+    {
+        
+        // using reader make a new user
+        if (await reader.ReadAsync() == false)
+            return null;
+        var user = new User();
+        user.UserId = reader.GetInt32("user_id");
+        user.UserName = reader.GetString("user_name");
+        user.UserType = (UserType) reader.GetInt16("user_type");
+        user.LastLoginTimestamp = reader.GetDateTime("last_login_timestamp");
+        return user;
     }
 
     public async Task<User?> AuthenticateUser(string username, string password)
@@ -52,12 +67,11 @@ public class UserRepository : Repository, IUserRepository
         var connection = _dbContext.GetConnection();
         using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT * FROM user 
-                        WHERE Username = @u AND PasswordHash = SHA(@p);";
+                        WHERE user_name = @u AND password_hash = SHA2(@p,256);";
         cmd.Parameters.AddWithValue("u", username);
         cmd.Parameters.AddWithValue("p", password);
-        var reader = await cmd.ExecuteReaderAsync();
-        IEnumerable<User?> res = await Read<User>(reader);
-        return res.FirstOrDefault();
+        using var reader = await cmd.ExecuteReaderAsync();
+        return await ReadUserAsync(reader);
     }
 
     public async Task SignInAsync(User user)
@@ -65,37 +79,10 @@ public class UserRepository : Repository, IUserRepository
         var connection = _dbContext.GetConnection();
         await using var cmd = connection.CreateCommand();
         // set last login time
-        cmd.CommandText = @"UPDATE user SET LastLogin = @l, OTP = @o WHERE UserId = @u;";
+        cmd.CommandText = @"UPDATE user SET last_login_timestamp = @l WHERE user_id = @u;";
         cmd.Parameters.AddWithValue("l", DateTime.Now);
         cmd.Parameters.AddWithValue("o", new Random().Next(100000, 999999));
         cmd.Parameters.AddWithValue("u", user.UserId);
-        await cmd.ExecuteNonQueryAsync();
-        
-        // also set an OTP for the session
-        await SetOTP(user.UserId);
-    }
-
-    public async Task<IEnumerable<UserRole>> GetUserRoles(int userId)
-    {
-        var connection = _dbContext.GetConnection();
-        await using var cmd = connection.CreateCommand();
-        cmd.CommandText = @"SELECT ur.UserRoleId, ur.Name
-                        FROM user_user_roles JOIN user_role ur 
-                        ON ur.UserRoleId = user_user_roles.UserRoleId 
-                        WHERE UserId = @u;";
-        cmd.Parameters.AddWithValue("u", userId);
-        var reader = await cmd.ExecuteReaderAsync();
-        var res = await Read<UserRole>(reader);
-        return res;
-    }
-
-    public async Task SetOTP(int userId)
-    {
-        var connection = _dbContext.GetConnection();
-        await using var cmd = connection.CreateCommand();
-        cmd.CommandText = @"UPDATE user SET OTP = @o WHERE UserId = @u;";
-        cmd.Parameters.AddWithValue("o", new Random().Next(100000, 999999));
-        cmd.Parameters.AddWithValue("u", userId);
         await cmd.ExecuteNonQueryAsync();
     }
 }

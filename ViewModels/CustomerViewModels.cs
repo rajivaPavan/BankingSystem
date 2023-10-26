@@ -1,8 +1,10 @@
-﻿using BankingSystem.Models;
+﻿namespace BankingSystem.ViewModels;
 
-namespace BankingSystem.ViewModels;
-
-public class IndividualsViewModel
+public class CustomerSearchViewModel
 {
-    public IEnumerable<Individual> Individuals { get; set; }
+    public string? ValidateNic { get; set; }
+    public string? ValidateBusinessRegNo { get; set; }
+    public string? SearchNic { get; set; }
+    public string? SearchBusinessRegNo { get; set; }
+    public bool Search { get; set; }
 }

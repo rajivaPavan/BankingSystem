@@ -1,0 +1,146 @@
+﻿@{
+    ViewBag.Title = "Manage Customers";
+    Layout = "BankLayout";
+}
+
+@model CustomerSearchViewModel
+
+@{
+    ViewBag.Title = "New Individual Customer";
+    Layout = "BankLayout";
+}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Manage Bank Customers</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item active">Manage Bank Customers</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Individuals -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Add New Customer</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form id="search-individual"
+                          class="form" asp-controller="Customers"
+                          asp-action="SearchIndividual" method="post">
+                        <div class="card-body">
+                            <div class="form-group mb-0 row">
+                                <label asp-for="ValidateNic" class="col-sm-3 col-form-label">Validate NIC</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control mr-sm-2"
+                                           id="nic" asp-for="ValidateNic" placeholder="NIC" required>
+                                </div>
+                                <span class="text-danger" asp-validation-for="ValidateNic"></span>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <input type="hidden" asp-for="Search" value="false">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Search Individual</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form asp-action="SearchIndividual" method="post">
+                        <div class="card-body">
+                            <div class="form-group mb-0 row">
+                                <label asp-for="SearchNic" class="col-sm-3 col-form-label">NIC</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control mr-sm-2"
+                                           id="nic" asp-for="SearchNic" placeholder="NIC" required>
+                                </div>
+                                <span class="text-danger" asp-validation-for="SearchNic"></span>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <input type="hidden" asp-for="Search" value="true">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+
+            </div>
+
+            <!-- Organizations -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Add New Organization</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form id="search-org"
+                          class="form" asp-controller="Customers"
+                          asp-action="SearchIndividual" method="post">
+                        <div class="card-body">
+                            <div class="form-group mb-0 row">
+                                <label asp-for="ValidateBusinessRegNo" class="col-sm-4 col-form-label">Validate Reg No</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control mr-sm-2"
+                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No">
+                                </div>
+                                <span class="text-danger" asp-validation-for="ValidateBusinessRegNo"></span>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-info">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title">Search Organization</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form asp-action="SearchOrganization" method="post">
+                        <div class="card-body">
+                            <div class="form-group mb-0 row">
+                                <label asp-for="ValidateBusinessRegNo" class="col-sm-4 col-form-label">Reg No</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control mr-sm-2"
+                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No">
+                                </div>
+                                <span class="text-danger" asp-validation-for="ValidateBusinessRegNo"></span>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-info">Submit</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- /.content -->

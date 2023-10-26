@@ -6,7 +6,7 @@ namespace BankingSystem.DbOperations;
 
 public interface IIndividualRepository : IRepository<Individual>
 {
-    
+    Task<Individual> GetByNicAsync(string nic);
 }
 
 public class IndividualRepository :  Repository, IIndividualRepository
@@ -18,7 +18,7 @@ public class IndividualRepository :  Repository, IIndividualRepository
         _context = context;
     }
 
-    public async Task<Individual?> ReadAsync(MySqlDataReader reader)
+    public async Task<Individual> ReadAsync(MySqlDataReader reader)
     {
         if (await reader.ReadAsync() == false) return null;
         var individual = new Individual()
@@ -73,5 +73,15 @@ public class IndividualRepository :  Repository, IIndividualRepository
     public Task DeleteAsync(int id)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<Individual> GetByNicAsync(string nic)
+    {
+        var conn =  _context.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM individual WHERE nic = @nic";
+        cmd.Parameters.AddWithValue("@nic", nic);
+        using var reader = await cmd.ExecuteReaderAsync();
+        return await ReadAsync(reader);
     }
 }

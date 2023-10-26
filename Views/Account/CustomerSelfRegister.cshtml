@@ -5,24 +5,44 @@
     Layout = "Layout";
 }
 
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-body">
-            <h3 class="card-title font-weight-bold">Self Registration Form</h3>
-            <p class="card-text">For security purposes, your NIC and mobile number are required.</p>
-            <form asp-controller="Account" asp-action="CustomerSelfRegister">
-                <div class="mb-3">
-                    <label for="nic" class="form-label">NIC (National Identity Card)</label>
-                    <input asp-for="NIC" type="text" class="form-control" id="nic" name="nic" required>
+<div class="register-page">
+    <div class="register-box">
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a href="../../index2.html" class="h1"><b>Admin</b>LTE</a>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">Self Registration Form</p>
+                <p class="card-text">For security purposes, your NIC and mobile number are required.</p>
+    
+                <form action="Account/CustomerSelfRegister" method="post">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="NIC (National Identity Card)" name="nic" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-id-card"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group mb-3">
+                        <input type="tel" class="form-control" placeholder="Mobile Phone Number" name="mobile" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                </form>
+    
+                <div class="social-auth-links text-center">
+                    <!-- You can add social login buttons here if needed -->
                 </div>
-
-                <div class="mb-3">
-                    <label for="mobile" class="form-label">Mobile Phone Number</label>
-                    <input asp-for="MobileNumber" type="tel" class="form-control" id="mobile" name="mobile" required>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-        </div>
+            </div>
+            <!-- /.form-box -->
+        </div><!-- /.card -->
     </div>
+    <!-- /.register-box -->
 </div>

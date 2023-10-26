@@ -9,4 +9,15 @@ public class CustomerController : Controller
     {
         
     }
+    
+    /// <summary>
+    /// Customer Dashboard
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    [Route("/dashboard")]
+    public IActionResult Index()
+    {
+        return View();
+    }
 }

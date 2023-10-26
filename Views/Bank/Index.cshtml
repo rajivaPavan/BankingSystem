@@ -2,10 +2,56 @@
 
 @{
     ViewBag.Title = "Bank Operations";
-    Layout = "_Layout";
+    Layout = "BankLayout";
 }
 
-<h2>Bank Operations</h2>
-<div class="my-2">
-    <a asp-action="Individuals" class="link-primary">Individuals</a>
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Dashboard</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item">
+                        <a href="#">Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">Starter Page</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <a asp-controller="Individuals" asp-action="Index">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">Manage Individuals</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="fas fa-building"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">Manage Organizations</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
 </div>

@@ -97,13 +97,13 @@
                     <!-- form start -->
                     <form id="search-org"
                           class="form" asp-controller="Customers"
-                          asp-action="SearchIndividual" method="post">
+                          asp-action="SearchOrganization" method="post">
                         <div class="card-body">
                             <div class="form-group mb-0 row">
                                 <label asp-for="ValidateBusinessRegNo" class="col-sm-4 col-form-label">Validate Reg No</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control mr-sm-2"
-                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No">
+                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No" required>
                                 </div>
                                 <span class="text-danger" asp-validation-for="ValidateBusinessRegNo"></span>
                             </div>
@@ -126,7 +126,7 @@
                                 <label asp-for="ValidateBusinessRegNo" class="col-sm-4 col-form-label">Reg No</label>
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control mr-sm-2"
-                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No">
+                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No" required>
                                 </div>
                                 <span class="text-danger" asp-validation-for="ValidateBusinessRegNo"></span>
                             </div>

@@ -18,7 +18,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Login()
     {
         if (HttpContext!.User.Identity!.IsAuthenticated)
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Bank");
         return View();
     }
 
@@ -33,7 +33,7 @@ public class AccountController : Controller
             return View();
         }
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Bank");
 
     }
     
@@ -41,7 +41,7 @@ public class AccountController : Controller
     {
         if (HttpContext!.User.Identity!.IsAuthenticated) 
             await _authService.Logout();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Index", "Bank");
     }
 
     [HttpGet]

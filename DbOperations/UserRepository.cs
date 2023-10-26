@@ -8,6 +8,7 @@ public interface IUserRepository : IRepository<User>
 {
     Task<User?> AuthenticateUser(string username, string password);
     Task SignInAsync(User user);
+    Task<bool> IsInRole(string username, int userType);
 }
 
 public class UserRepository : Repository, IUserRepository
@@ -84,5 +85,17 @@ public class UserRepository : Repository, IUserRepository
         cmd.Parameters.AddWithValue("o", new Random().Next(100000, 999999));
         cmd.Parameters.AddWithValue("u", user.UserId);
         await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<bool> IsInRole(string username, int userType)
+    {
+        var connection = _dbContext.GetConnection();
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = @"SELECT * FROM user 
+                        WHERE user_name = @u AND user_type = @t;";
+        cmd.Parameters.AddWithValue("u", username);
+        cmd.Parameters.AddWithValue("t", userType);
+        using var reader = await cmd.ExecuteReaderAsync();
+        return reader.HasRows;
     }
 }

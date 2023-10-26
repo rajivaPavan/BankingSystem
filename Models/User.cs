@@ -2,8 +2,10 @@
 
 public enum UserType
 {
-    Individual,
-    Organization
+    Customer,
+    Employee,
+    Manager,
+    Admin
 }
 
 public class User
@@ -12,16 +14,4 @@ public class User
     public string UserName { get; set; }
     public UserType UserType { get; set; }
     public DateTime LastLoginTimestamp { get; set; }
-}
-
-public class UserRole
-{
-    public int UserRoleId { get; set; }
-    public string Name { get; set; }
-}
-
-public class UserUserRole
-{
-    public int UserId { get; set; }
-    public int UserRoleId { get; set; }
 }

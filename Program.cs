@@ -1,5 +1,8 @@
+using System.Security.Claims;
+using BankingSystem.Constants;
 using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
+using BankingSystem.Models;
 using BankingSystem.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MySqlConnector;
@@ -15,12 +18,63 @@ services.AddSingleton<AppDbContext>(_ =>
 
 services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
+services.AddScoped<IUserService, UserService>();
 services.AddScoped<IIndividualRepository, IndividualRepository>();
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-7.0
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie();
+
+// add authorization policy
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Policies.NonCustomerPolicy, policy =>
+    {
+        // if user's role claim is not Customer, then allow access
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c =>
+                c.Type == ClaimTypes.Role && c.Value != UserType.Customer.ToString()));
+    });
+
+    options.AddPolicy(Policies.CustomerPolicy, policy =>
+    {
+        // if user's role claim is Customer or Admin, then allow access
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c =>
+                c.Type == ClaimTypes.Role && (c.Value == UserType.Customer.ToString() ||
+                                              c.Value == UserType.Admin.ToString())));
+    });
+    
+    options.AddPolicy(Policies.AdminPolicy, policy =>
+    {
+        // if user's role claim is Admin, then allow access
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c =>
+                c.Type == ClaimTypes.Role && c.Value == UserType.Admin.ToString()));
+    });
+    
+    options.AddPolicy(Policies.EmployeePolicy, policy =>
+    {
+        // if user's role claim is Employee, Manager or Admin, then allow access
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c =>
+                c.Type == ClaimTypes.Role && (c.Value == UserType.Employee.ToString() ||
+                c.Value == UserType.Manager.ToString() ||
+                c.Value == UserType.Admin.ToString())));
+    });
+    
+    options.AddPolicy(Policies.ManagerPolicy, policy =>
+    {
+        // if user's role claim is Manager or Admin, then allow access
+        policy.RequireAssertion(context =>
+            context.User.HasClaim(c =>
+                c.Type == ClaimTypes.Role && (c.Value == UserType.Manager.ToString() ||
+                                              c.Value == UserType.Admin.ToString())));
+    });
+});
+
+services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -32,6 +86,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Error/AccessDenied", "?statusCode={0}");
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -40,7 +96,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.MapRazorPages();
+app.MapRazorPages();
 app.MapDefaultControllerRoute();
 
 app.MapControllerRoute(

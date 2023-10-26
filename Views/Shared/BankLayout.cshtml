@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Bank" asp-action="Index">Home</a>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                 </li>
             </ul>
 
@@ -143,7 +143,9 @@
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                 <div class="info">
-                    <span class="d-block text-white">Username</span>
+                    <span class="d-block text-white">
+                        @User.Identity?.Name
+                    </span>
                 </div>
             </div>
 
@@ -153,7 +155,7 @@
                     <!-- Add icons to the links using the .nav-icon class
                     with font-awesome or any other icon font library -->
                     <li class="nav-item">
-                        <a asp-controller="Bank" asp-action="Index" class="nav-link">
+                        <a asp-controller="Home" asp-action="Index" class="nav-link">
                             <i class="nav-icon fas fa-tachometer-alt"></i>
                             <p>
                                 Dashboard
@@ -167,7 +169,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a asp-controller="Bank" asp-action="Index" class="nav-link">
+                                <a href="#" class="nav-link">
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Manage Organizations</p>
                                 </a>

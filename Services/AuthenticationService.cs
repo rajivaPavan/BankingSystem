@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
+using BankingSystem.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -47,7 +48,7 @@ public class AuthenticationService : IAuthenticationService
         };
 
         claims.AddRange(new[] {new Claim(ClaimTypes.Role, user.UserType.ToString())});
-
+        
         var claimsIdentity = new ClaimsIdentity(
             claims, CookieAuthenticationDefaults.AuthenticationScheme);
 

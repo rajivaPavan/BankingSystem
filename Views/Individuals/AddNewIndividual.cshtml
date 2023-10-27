@@ -1,4 +1,4 @@
-﻿@model dynamic
+﻿@model IndividualViewModel
 
 @{
     ViewBag.Title = "New Individual Customer";
@@ -36,23 +36,26 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label for="FirstName">NIC</label>
-                                <input type="text" class="form-control" id="nic" name="NIC" value="@Model" disabled required>
+                                <label asp-for="NIC">NIC</label>
+                                <input type="text" class="form-control" id="nic" asp-for="NIC" disabled required>
                             </div>
                             <div class="form-group">
-                                <label for="FirstName">First Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="FirstName" name="FirstName" required>
+                                <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="FirstName" 
+                                       asp-for="FirstName" required>
                             </div>
                             <div class="form-group">
-                                <label for="LastName">Last Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="LastName" name="LastName" required>
+                                <label asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="LastName" 
+                                       asp-for="LastName" required>
                             </div>
                             <div class="">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="DateOfBirth">Date of Birth<span class="text-danger">*</span></label>
-                                            <input type="date" class="form-control" id="DateOfBirth" name="DateOfBirth" required>
+                                            <label asp-for="DateOfBirth">Date of Birth<span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control" id="DateOfBirth" 
+                                                   asp-for="DateOfBirth" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -72,21 +75,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Bank Services</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-check form-check-inline my-2">
-                                <input type="checkbox" class="form-check-input" id="OnlineBanking" name="OnlineBanking">
-                                <label for="OnlineBanking" class="form-check-label">Online Banking (Email Required)</label>
-                            </div>
-                            <div class="form-check form-check-inline my-2">
-                                <input type="checkbox" class="form-check-input" id="DebitCard" name="DebitCard">
-                                <label for="DebitCard" class="form-check-label">Debit Card</label>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Bank Services -->
@@ -97,21 +85,24 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label for="Email">Email</label>
-                                <input type="text" class="form-control" id="Email" name="Email">
+                                <label asp-for="Email">Email</label>
+                                <input type="text" class="form-control" id="Email" 
+                                       asp-for="Email">
                             </div>
                             <div class="row">
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="Mobile">Mobile Phone Number <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="Mobile" name="Mobile" required>
+                                        <label asp-for="MobileNumber">Mobile Phone Number <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="Mobile" 
+                                               asp-for="MobileNumber" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="Home">Home Phone Number</label>
-                                        <input type="text" class="form-control" id="Home" name="Home">
+                                        <label asp-for="HomeNumber">Home Phone Number</label>
+                                        <input type="text" class="form-control" id="Home" 
+                                               asp-for="HomeNumber">
                                     </div>
 
                                 </div>
@@ -119,15 +110,15 @@
 
                             <div class="form-group">
                                 <label for="Line1">Address Line 1<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="Line1" name="Address" required>
+                                <input type="text" class="form-control" id="Line1" name="Address">
                             </div>
                             <div class="form-group">
                                 <label for="Line2">Address Line 2<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="Line2" name="Address" required>
+                                <input type="text" class="form-control" id="Line2" name="Address">
                             </div>
                             <div class="form-group">
                                 <label for="City">City</label>
-                                <input type="text" class="form-control" id="City" name="City" required>
+                                <input type="text" class="form-control" id="City" name="City">
                             </div>
                         </div>
                     </div>

@@ -27,9 +27,9 @@ public class Individual
     public DateTime DateOfBirth { get; set; }
     public int? CustomerId { get; set; }
     public int? UserId { get; set; }
-    public string Email { get; set; }
+    public string? Email { get; set; }
     public Gender Gender { get; set; }
     public string MobileNumber { get; set; }
-    public string HomeNumber { get; set; }
-    public string Address { get; set; }
+    public string? HomeNumber { get; set; }
+    public string? Address { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
+using BankingSystem.Models;
 using BankingSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,12 +29,18 @@ public class CustomersController : Controller
     public async Task<IActionResult> SearchIndividual(CustomerSearchViewModel model)
     {
         // validate if customer with nic exists
-        await _context.GetConnection().OpenAsync();
-        var individual = await _individualRepository.GetByNicAsync(model.Search ? model.SearchNic! : model.ValidateNic!);
-        await _context.GetConnection().CloseAsync();
+        Individual? individual;
+        try
+        {
+            await _context.GetConnection().OpenAsync();
+            individual = await _individualRepository
+                .GetByNicAsync(model.Search ? model.SearchNic! : model.ValidateNic!);
+        }
+        finally
+        {
+            await _context.GetConnection().CloseAsync();
+        }
         
-        
-
         if (model.Search)
         {
             // check if nic is valid

@@ -1,6 +1,5 @@
 ﻿using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
-using BankingSystem.Models;
 using BankingSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +27,33 @@ public class IndividualsController : Controller
         {
             return RedirectToAction("Index", "Customers");
         }
-        return View("AddNewIndividual", nic);
+        var model = new IndividualViewModel()
+        {
+            NIC = nic
+        };
+        return View("AddNewIndividual", model);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> AddNewIndividual(IndividualViewModel model)
+    {
+        var conn = _context.GetConnection();
+        int customerId = -1;
+        try
+        {
+            await conn.OpenAsync();
+            customerId = await _individualRepository.AddIndividual(model);
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
+
+        if (customerId != -1)
+            return RedirectToAction("AddNewBankAccount", 
+                "BankAccount", 
+                new {customerId, nic = model.NIC});
+        
+        return View(model);
     }
 }

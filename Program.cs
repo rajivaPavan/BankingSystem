@@ -20,6 +20,7 @@ services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
 services.AddScoped<IUserService, UserService>();
 services.AddScoped<IIndividualRepository, IndividualRepository>();
+services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-7.0

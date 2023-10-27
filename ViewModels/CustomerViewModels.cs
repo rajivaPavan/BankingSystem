@@ -1,4 +1,6 @@
-﻿namespace BankingSystem.ViewModels;
+﻿using BankingSystem.Models;
+
+namespace BankingSystem.ViewModels;
 
 public class CustomerSearchViewModel
 {
@@ -7,4 +9,8 @@ public class CustomerSearchViewModel
     public string? SearchNic { get; set; }
     public string? SearchBusinessRegNo { get; set; }
     public bool Search { get; set; }
+}
+
+public class IndividualViewModel : Individual
+{
 }

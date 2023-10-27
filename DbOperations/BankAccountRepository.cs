@@ -6,6 +6,7 @@ namespace BankingSystem.DbOperations;
 public interface IBankAccountRepository
 {
     public Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlans();
+    Task AddSavingsAccount(AddBankAccountViewModel model, string accNo, int branchId);
 }
 
 public class BankAccountRepository : IBankAccountRepository
@@ -39,5 +40,19 @@ public class BankAccountRepository : IBankAccountRepository
         }
         
         return savingsPlans;
+    }
+
+    public async Task AddSavingsAccount(AddBankAccountViewModel model, string accNo, int branchId)
+    {
+        var conn = _context.GetConnection();
+        using var cmd =  conn.CreateCommand();
+        cmd.CommandText = "CALL add_savings_account(@acc_no, @customer_id, @branch_id, @initial_deposit, @open_date, @savings_plan_id)";
+        cmd.Parameters.AddWithValue("@acc_no", accNo);
+        cmd.Parameters.AddWithValue("@customer_id", model.CustomerId);
+        cmd.Parameters.AddWithValue("@branch_id", branchId);
+        cmd.Parameters.AddWithValue("@initial_deposit", model.InitialDeposit);
+        cmd.Parameters.AddWithValue("@open_date", DateTime.Now.Date);
+        cmd.Parameters.AddWithValue("@savings_plan_id", model.SavingsPlanId);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

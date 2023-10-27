@@ -17,14 +17,19 @@ public class AuthenticationService : IAuthenticationService
 {
     private readonly IUserRepository _userRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IEmployeeRepository _employeeRepository;
     private readonly AppDbContext _dbContext;
 
     public AuthenticationService(AppDbContext dbContext,
-        IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+        IUserRepository userRepository, 
+        IHttpContextAccessor httpContextAccessor,
+        IEmployeeRepository employeeRepository
+        )
     {
         _dbContext = dbContext;
         _userRepository = userRepository;
         _httpContextAccessor = httpContextAccessor;
+        _employeeRepository = employeeRepository;
     }
     
     public async Task<bool> Login(string username, string password)
@@ -40,14 +45,29 @@ public class AuthenticationService : IAuthenticationService
         }
         
         await _userRepository.SignInAsync(user);
+
+        string? branchId = null;
+        if (user.UserType is UserType.Employee or UserType.Manager)
+        {
+            // get branch from employee table 
+            var id = await _employeeRepository.GetEmployeeBranchByUserId(user.UserId);
+            if (id != -1)
+                branchId = id.ToString();
+        }
+        
         await _dbContext.GetConnection().CloseAsync();
 
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.Role, user.UserType.ToString())
         };
 
-        claims.AddRange(new[] {new Claim(ClaimTypes.Role, user.UserType.ToString())});
+        if (branchId != null)
+        {
+            // add BranchId claim
+            claims.Add(new Claim("BranchId", branchId));
+        }
         
         var claimsIdentity = new ClaimsIdentity(
             claims, CookieAuthenticationDefaults.AuthenticationScheme);

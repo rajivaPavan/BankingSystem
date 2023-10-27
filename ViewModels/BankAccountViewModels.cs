@@ -28,6 +28,8 @@ public class AddBankAccountViewModel
     /// Whether the customer wants a debit card or not.
     /// </summary>
     public bool WantDebitCard { get; set; }
+
+    public double InitialDeposit { get; set; }
 }
 
 public class SavingsPlanViewModel

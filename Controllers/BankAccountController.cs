@@ -1,5 +1,6 @@
 ﻿using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
+using BankingSystem.Services;
 using BankingSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,28 +10,20 @@ namespace BankingSystem.Controllers;
 public class BankAccountController : Controller
 {
     private readonly AppDbContext _context;
-    private readonly IBankAccountRepository _bankAccountRepository;
-
-    public BankAccountController(AppDbContext context, IBankAccountRepository bankAccountRepository)
+    private readonly IBankAccountService _bankAccountService;
+    
+    public BankAccountController(AppDbContext context, 
+        IBankAccountService bankAccountService)
     {
         _context = context;
-        _bankAccountRepository = bankAccountRepository;
+        _bankAccountService = bankAccountService;
     }
     
     [HttpGet]
     public async Task<IActionResult> AddNewBankAccount(int customerId, string nic)
     {
-        var conn = _context.GetConnection();
-        IEnumerable<SavingsPlanViewModel> savingsPlans;
-        try
-        {
-            await conn.OpenAsync();
-            savingsPlans = await _bankAccountRepository.GetSavingsPlans();
-        }
-        finally
-        {
-            await conn.CloseAsync();
-        }
+        var savingsPlans 
+            = await _bankAccountService.GetSavingsPlans();
         
         var model = new AddBankAccountViewModel()
         {
@@ -45,7 +38,10 @@ public class BankAccountController : Controller
     [HttpPost]
     public IActionResult AddSavingsAccount(AddBankAccountViewModel model)
     {
-        return View("AddNewBankAccount", model);
+        _bankAccountService.AddSavingsAccount(model);
+        
+            
+        return Json(new {success = true});
     }
     
     [HttpPost]

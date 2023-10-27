@@ -22,7 +22,9 @@ public class CustomersController : Controller
     
     public IActionResult Index()
     {
-        return View();
+        CustomerSearchViewModel model = new();
+        model.Found = false;
+        return View(model);
     }
     
     [HttpPost]
@@ -55,8 +57,10 @@ public class CustomersController : Controller
                 ModelState.AddModelError("SearchNic", "Customer with this NIC does not exist.");
                 return View("Index", model);
             }
-            
-            throw new NotImplementedException();
+
+            model.Found = true;
+            model.IndividualId = individual.IndividualId;
+            return View("Index", model);
         }
         
         // check if nic is valid
@@ -93,5 +97,27 @@ public class CustomersController : Controller
         }
                 
         return RedirectToAction("AddNewIndividual", "Individuals", new {nic});
+    }
+
+    public async Task<IActionResult> ViewIndividual(int individualId)
+    {
+        // validate if customer with nic exists
+        Individual? individual;
+        try
+        {
+            await _context.GetConnection().OpenAsync();
+            individual = await _individualRepository.GetByIdAsync(individualId);
+        }
+        finally
+        {
+            await _context.GetConnection().CloseAsync();
+        }
+        
+        if (individual == null)
+        {
+            return View("Index");
+        }
+        
+        return View(individual);
     }
 }

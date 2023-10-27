@@ -78,7 +78,12 @@
                         <!-- /.card-body -->
                         <div class="card-footer">
                             <input type="hidden" asp-for="Search" value="true">
+
                             <button type="submit" class="btn btn-primary">Submit</button>
+                            @if (Model.Found != null && Model.Found == true)
+                            {
+                                <a asp-action="ViewIndividual" asp-route-id="@Model.SearchNic" class="btn btn-info">View</a>
+                            }
                         </div>
                     </form>
                 </div>

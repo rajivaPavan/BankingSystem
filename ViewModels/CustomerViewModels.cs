@@ -9,6 +9,8 @@ public class CustomerSearchViewModel
     public string? SearchNic { get; set; }
     public string? SearchBusinessRegNo { get; set; }
     public bool Search { get; set; }
+    public bool? Found { get; set; }
+    public int? IndividualId { get; set; }
 }
 
 public class IndividualViewModel : Individual

@@ -4,6 +4,7 @@ using BankingSystem.Services;
 using BankingSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MySqlConnector;
 
 namespace BankingSystem.Controllers;
 
@@ -36,12 +37,22 @@ public class BankAccountController : Controller
     }
     
     [HttpPost]
-    public IActionResult AddSavingsAccount(AddBankAccountViewModel model)
+    public async Task<IActionResult> AddSavingsAccount(AddBankAccountViewModel model)
     {
-        _bankAccountService.AddSavingsAccount(model);
-        
-            
-        return Json(new {success = true});
+        try
+        {
+            await _bankAccountService.AddSavingsAccount(model);
+        }
+        catch (MySqlException e)
+        {
+            ModelState.AddModelError("", "Something went wrong. Please try again later.");
+        }
+        catch (Exception e)
+        {
+            ModelState.AddModelError("", e.Message);
+        }
+
+        return RedirectToAction("Index", "Customers");
     }
     
     [HttpPost]

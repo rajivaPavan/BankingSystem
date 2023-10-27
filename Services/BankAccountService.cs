@@ -32,8 +32,15 @@ public class BankAccountService : IBankAccountService
         try
         {
             await conn.OpenAsync();
-            var accNo = GenerateBankAccountNumber();
             var branchId = int.Parse(_httpContextAccessor.HttpContext!.User.FindFirst("BranchId")!.Value);
+            // check if customer already has a savings account in the same branch
+            var hasSavingsAccount = await _bankAccountRepository
+                .HasAccountInBranch(model.CustomerId, branchId, BankAccountType.Savings);
+            
+            if (hasSavingsAccount)
+                throw new Exception("Customer already has a savings account in this branch");
+            
+            var accNo = GenerateBankAccountNumber();
             await _bankAccountRepository.AddSavingsAccount(model, accNo, branchId);
         }
         finally

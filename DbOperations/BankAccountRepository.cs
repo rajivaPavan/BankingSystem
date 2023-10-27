@@ -5,8 +5,9 @@ namespace BankingSystem.DbOperations;
 
 public interface IBankAccountRepository
 {
-    public Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlans();
+    Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlans();
     Task AddSavingsAccount(AddBankAccountViewModel model, string accNo, int branchId);
+    Task<bool> HasAccountInBranch(int customerId, int branchId, BankAccountType type);
 }
 
 public class BankAccountRepository : IBankAccountRepository
@@ -55,4 +56,25 @@ public class BankAccountRepository : IBankAccountRepository
         cmd.Parameters.AddWithValue("@savings_plan_id", model.SavingsPlanId);
         await cmd.ExecuteNonQueryAsync();
     }
+
+    public async Task<bool> HasAccountInBranch(int customerId, int branchId, BankAccountType type)
+    {
+        var conn = _context.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT EXISTS(SELECT * FROM bank_account " +
+                          "WHERE customer_id = @customer_id " +
+                          "AND branch_id = @branch_id " +
+                          "AND account_type = @t)";
+        cmd.Parameters.AddWithValue("@customer_id", customerId);
+        cmd.Parameters.AddWithValue("@branch_id", branchId);
+        cmd.Parameters.AddWithValue("@t", (sbyte)(type));
+        var result = await cmd.ExecuteScalarAsync();
+        return (long) result == 1;
+    }
+}
+
+public enum BankAccountType
+{
+    Current = 0,
+    Savings = 1
 }

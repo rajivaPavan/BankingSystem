@@ -1,0 +1,23 @@
+@model List<Account>
+
+    <h1>Account Summary</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Account Number</th>
+                <th>Balance</th>
+                <th>Account Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in Model)
+        {
+            <tr>
+                <td>@account.AccountNumber</td>
+                <td>@account.Balance</td>
+                <td>@account.AccountType</td>
+            </tr>
+        }
+        </tbody>
+    </table>

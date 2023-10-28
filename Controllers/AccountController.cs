@@ -33,7 +33,8 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
     {
-        var success = await _authService.Login(model.Username, model.Password);
+        var hash = _passwordService.HashPassword(model.Password);
+        var success = await _authService.Login(model.Username, hash);
 
         if (success == false)
         {

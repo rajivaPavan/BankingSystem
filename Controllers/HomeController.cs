@@ -1,33 +1,19 @@
-﻿using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using BankingSystem.ViewModels;
+﻿using BankingSystem.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BankingSystem.Controllers;
 
 [Authorize]
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
+    [Route("/dashboard")]
     public IActionResult Index()
     {
-        return View();
-    }
+        // return view based on user role
+        if (User.IsInRole(UserType.Customer.ToString()))
+            return View("CustomerDashboard");
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View("BankDashboard");
     }
 }

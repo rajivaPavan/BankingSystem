@@ -1,0 +1,137 @@
+﻿@model IndividualViewModel
+
+@{
+    ViewBag.Title = "New Individual Customer";
+    Layout = "BankLayout";
+}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>New Individual Customer Form</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item">
+                        <a href="#">Individuals</a>
+                    </li>
+                    <li class="breadcrumb-item active">Add New Customer</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <form action="" method="POST">
+            <div class="row">
+                <!-- Personal Information -->
+                <div class="col-md-6">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Personal Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label asp-for="NIC">NIC</label>
+                                <input type="text" class="form-control" id="nic" asp-for="NIC" disabled required>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="FirstName" 
+                                       asp-for="FirstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="LastName">Last Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="LastName" 
+                                       asp-for="LastName" required>
+                            </div>
+                            <div class="">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label asp-for="DateOfBirth">Date of Birth<span class="text-danger">*</span></label>
+                                            <input type="date" class="form-control" id="DateOfBirth" 
+                                                   asp-for="DateOfBirth" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div>Gender<span class="text-danger">*</span></div>
+                                            <div class="form-check form-check-inline my-2">
+                                                <input id="gender-male" type="radio" class="form-check-input" value="Male" name="Gender">
+                                                <label for="gender-male" class="form-check-label">Male</label>
+                                            </div>
+                                            <div class="form-check form-check-inline my-2">
+                                                <input id="gender-female" type="radio" class="form-check-input" value="Female" name="Gender">
+                                                <label for="gender-female" class="form-check-label">Female</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank Services -->
+                <div class="col-md-6">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Contact Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label asp-for="Email">Email</label>
+                                <input type="text" class="form-control" id="Email" 
+                                       asp-for="Email">
+                            </div>
+                            <div class="row">
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="MobileNumber">Mobile Phone Number <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="Mobile" 
+                                               asp-for="MobileNumber" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="HomeNumber">Home Phone Number</label>
+                                        <input type="text" class="form-control" id="Home" 
+                                               asp-for="HomeNumber">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Line1">Address Line 1<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="Line1" name="Address">
+                            </div>
+                            <div class="form-group">
+                                <label for="Line2">Address Line 2<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="Line2" name="Address">
+                            </div>
+                            <div class="form-group">
+                                <label for="City">City</label>
+                                <input type="text" class="form-control" id="City" name="City">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row pb-3">
+                <div class="col-12">
+                    <a href="#" class="btn btn-secondary">Cancel</a>
+                    <input type="submit" value="Add New Customer" class="btn btn-success float-right">
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+<!-- /.content -->

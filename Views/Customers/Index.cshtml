@@ -1,0 +1,100 @@
+﻿@{
+    ViewBag.Title = "Manage Customers";
+    Layout = "BankLayout";
+}
+
+@model IndividualSearchViewModel
+
+@{
+    ViewBag.Title = "New Individual Customer";
+    Layout = "BankLayout";
+}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Manage Bank Customers</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item active">Manage Bank Customers</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Individuals -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Add New Customer</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form id="search-individual"
+                          class="form" asp-controller="Customers"
+                          asp-action="Index" method="post">
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <label asp-for="Nic" class="col-sm-3 col-form-label">Validate NIC</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control mr-sm-2"
+                                           id="nic" asp-for="Nic" placeholder="NIC" required>
+                                </div>
+                                <span class="text-danger" asp-validation-for="Nic"></span>
+                            </div>
+                            <div class="form-group mb-0">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" asp-for="CheckForChild">
+                                    <label asp-for="CheckForChild" class="custom-control-label"></label></div>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @if (Model.Found)
+            {
+                <div class="col-md-6">
+                    @foreach (var i in Model.Result)
+                    {
+                        <div class="card card-info">
+                            <div class="card-header">
+                                @Model.Nic
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="firstName">Name:</label>
+                                    <p id="firstName">@i.FirstName @i.LastName</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="accountNumber">Bank Account Number:</label>
+                                    <p id="accountNumber">@i.BankAccountNumber</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="accountType">Bank Account Type:</label>
+                                    <p id="accountType">@i.BankAccountType.ToString()</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="accountBalance">Bank Account Balance:</label>
+                                    <p id="accountBalance">@i.BankAccountBalance</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- /.content -->

@@ -62,7 +62,25 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> CustomerSelfRegister(SelfRegistrationViewModel model)
     {
-        return View(model);
+        
+        // store nic, bank account number in temp data
+        TempData["nic"] = model.NIC;
+        TempData["bankAccountNumber"] = model.BankAccountNumber;
+        
+        // validate individual using nic and bank account number
+        var hasUserAccount = await _userService.IndividualHasUserAccount(model.NIC, model.BankAccountNumber);
+        
+        if (hasUserAccount == true)
+        {
+            ModelState.AddModelError("", "User already has an account.");
+            return View(model);
+        }
+        
+        // generate and save otp in temp data
+        var otp = new Random().Next(100000, 999999).ToString();
+        TempData["otp"] = otp;
+        
+        return RedirectToAction("CustomerFinalizeSelfRegister");
     }
     
     [HttpGet]
@@ -74,7 +92,36 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> CustomerFinalizeSelfRegister(FinalizeSelfRegisterViewModel model)
     {
-        return View(model);
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError("", "Invalid");
+            return View(model);
+        }
+        
+        var nic = TempData["nic"] as string;
+        var bankAccountNumber = TempData["bankAccountNumber"] as string;
+        var username = model.Username;
+        var password = model.Password;
+        var otp = model.OTP;
+        
+        // validate otp
+        var tempOtp = TempData["otp"] as string;
+        if (tempOtp != otp || tempOtp == null)
+        {
+            ModelState.AddModelError("", "Invalid OTP. Please try again.");
+            return View(model);
+        }
+        
+        var user = new User()
+        {
+            UserName = username,
+            UserType = UserType.Customer
+        };
+        
+        // register user
+        await _userService.RegisterUser(user, password);
+        
+        return RedirectToAction("Login");
     }
     
     

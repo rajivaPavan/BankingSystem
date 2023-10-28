@@ -9,15 +9,26 @@
     <div class="register-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
-                <a href="../../index2.html" class="h1"><b>Admin</b>LTE</a>
+                <a asp-action="Index" asp-controller="Home" class="h1"><b>Bank</b>A</a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Self Registration Form</p>
                 <p class="card-text">For security purposes, your NIC and mobile number are required.</p>
     
-                <form action="Account/CustomerSelfRegister" method="post">
+                <form asp-action="CustomerSelfRegister" method="post">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="NIC (National Identity Card)" name="nic" required>
+                        <input type="text" class="form-control" asp-for="NIC" 
+                               placeholder="NIC (National Identity Card)" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-id-card"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input class="form-control" asp-for="BankAccountNumber" 
+                               placeholder="" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-id-card"></span>
@@ -26,7 +37,8 @@
                     </div>
                     
                     <div class="input-group mb-3">
-                        <input type="tel" class="form-control" placeholder="Mobile Phone Number" name="mobile" required>
+                        <input asp-for="MobileNumber"
+                               class="form-control" placeholder="Mobile Phone Number" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-phone"></span>
@@ -36,10 +48,6 @@
     
                     <button type="submit" class="btn btn-primary btn-block">Submit</button>
                 </form>
-    
-                <div class="social-auth-links text-center">
-                    <!-- You can add social login buttons here if needed -->
-                </div>
             </div>
             <!-- /.form-box -->
         </div><!-- /.card -->

@@ -38,5 +38,3 @@ begin
     end if;
     return authenticated;
 end;
-
-

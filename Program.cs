@@ -5,6 +5,7 @@ using BankingSystem.DbOperations;
 using BankingSystem.Models;
 using BankingSystem.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,11 +22,14 @@ services.AddSingleton<AppDbContext>(_ =>
 
 services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
-services.AddScoped<IUserService, UserService>();
 services.AddScoped<IIndividualRepository, IndividualRepository>();
+services.AddScoped<IUserService, UserService>();
 services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 services.AddScoped<IBankAccountService, BankAccountService>();
 services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+
+services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
+services.AddSession();
 
 // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-6.0
 // https://learn.microsoft.com/en-us/aspnet/core/security/authorization/claims?view=aspnetcore-7.0
@@ -101,6 +105,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapRazorPages();
 app.MapDefaultControllerRoute();

@@ -96,6 +96,8 @@ public class IndividualRepository :  Repository, IIndividualRepository
         return res;
     }
 
+    
+
     private static IndividualViewModel GetIndividualViewModel(MySqlDataReader reader)
     {
         var individualViewModel = new IndividualViewModel();

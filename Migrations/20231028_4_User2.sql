@@ -43,3 +43,27 @@ begin
         SET o_user_type = -1;
     end if;
 end;
+
+drop procedure if exists register_individual_user;
+create procedure register_individual_user(in p_user_name varchar(50),
+                              in p_password_hash varchar(64),
+                              in p_individual_id int) 
+begin
+    -- transaction to add record to user table and update individual table
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        RESIGNAL;
+    END;
+    
+    START TRANSACTION;
+        INSERT INTO user (user_name, password_hash, user_type)
+        VALUES (p_user_name, p_password_hash, 0);
+            
+        SET @user_id = LAST_INSERT_ID();
+    
+        UPDATE individual
+        SET user_id = @user_id
+        WHERE individual_id = p_individual_id;
+    COMMIT;   
+end;

@@ -10,7 +10,7 @@ public interface IUserService
 {
     Task<bool> IsInRole(string username, UserType userType);
     Task<int> IndividualHasUserAccount(string nic, string bankAccountNumber);
-    Task<bool> RegisterUser(User user, string password, int individualId);
+    Task<bool> RegisterIndividualUser(User user, string password, int individualId);
 }
 
 public class UserService : IUserService
@@ -96,19 +96,18 @@ public class UserService : IUserService
         return res;
     }
 
-    public async Task<bool> RegisterUser(User user, string password, int individualId)
+    public async Task<bool> RegisterIndividualUser(User user, string password, int individualId)
     {
         var conn = _dbContext.GetConnection();
         await conn.OpenAsync();
         try
         {
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"INSERT INTO user (user_name, user_type, password_hash) 
-                            VALUES (@user_name, @user_type, @password_hash)";
+            cmd.CommandText = "CALL register_individual_user(@user_name, @password_hash, @individual_id);";
         
             cmd.Parameters.AddWithValue("@user_name", user.UserName);
-            cmd.Parameters.AddWithValue("@user_type", user.UserType);
             cmd.Parameters.AddWithValue("@password_hash", password);
+            cmd.Parameters.AddWithValue("individual_id", individualId);
         
             await cmd.ExecuteNonQueryAsync();
         }

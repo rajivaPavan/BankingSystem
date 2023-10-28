@@ -64,12 +64,7 @@ public class AccountController : Controller
 
     [HttpPost]
     public async Task<IActionResult> CustomerSelfRegister(SelfRegistrationViewModel model)
-    {
-        
-        // store nic, bank account number in temp data
-        TempData["nic"] = model.NIC;
-        TempData["bankAccountNumber"] = model.BankAccountNumber;
-        
+    { 
         // validate individual using nic and bank account number
         var individualId = await _userService.IndividualHasUserAccount(model.NIC, model.BankAccountNumber);
         
@@ -82,7 +77,7 @@ public class AccountController : Controller
         // generate and save otp in temp data
         var otp = new Random().Next(100000, 999999).ToString();
         TempData["otp"] = otp;
-        TempData["otpExpiry"] = DateTime.Now.AddMinutes(10);
+        TempData["otpExpiry"] = DateTime.Now.AddMinutes(10).ToString("g");
         TempData["individualId"] = individualId;
         
         return RedirectToAction("CustomerFinalizeSelfRegister");
@@ -103,13 +98,27 @@ public class AccountController : Controller
             return View(model);
         }
         
-        var individualId = (int)(TempData["individualId"] as int?)!;
+        var individualId = (TempData["individualId"] as int?);
+        var otp = model.OTP;
+        if (individualId == null)
+        {
+            ModelState.AddModelError("","Error Occurred. Try again");
+            return RedirectToAction("CustomerSelfRegister");
+        }
+        
         var username = model.Username;
         var password = model.Password;
-        var otp = model.OTP;
         
         // validate otp
         var tempOtp = TempData["otp"] as string;
+        // check if tempOtp expired or not
+        var tempOtpExpiry = DateTime.Parse(TempData["otpExpiry"] as string ?? string.Empty);
+        if (tempOtpExpiry < DateTime.Now)
+        {
+            ModelState.AddModelError("", "OTP has expired");
+            return RedirectToAction("CustomerSelfRegister");
+        }
+
         if (tempOtp != otp || tempOtp == null)
         {
             ModelState.AddModelError("", "Invalid OTP. Please try again.");
@@ -121,11 +130,20 @@ public class AccountController : Controller
             UserName = username,
             UserType = UserType.Customer
         };
-        
+        password = _passwordService.HashPassword(password);
         // register user
-        await _userService.RegisterUser(user, password, individualId);
+        await _userService.RegisterIndividualUser(user, password, (int)individualId);
         
         return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    [Route("/otpdemo")]
+    public IActionResult OtpDemo()
+    {
+        var otp = TempData["otp"] as string;
+        TempData["otp"] = otp;
+        return Json(new {otp});
     }
     
     

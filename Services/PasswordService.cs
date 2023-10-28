@@ -8,14 +8,12 @@ public interface IPasswordService
     bool VerifyPassword(string password, string hash, string salt);
 }
 
-
 public class PasswordService : IPasswordService
 {
-    private readonly string _salt = "abcdefg12345";
-
     public string HashPassword(string password)
     {
-        string hash = BCrypt.Net.BCrypt.HashPassword(password, _salt);
+        string salt = "$2a$12$djMzmKOH0UaCAychP/EIV.";
+        string hash = BCrypt.Net.BCrypt.HashPassword(password, salt);
         return hash;
     }
 

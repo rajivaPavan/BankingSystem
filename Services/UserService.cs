@@ -1,14 +1,16 @@
-﻿using BankingSystem.DBContext;
+﻿using System.Data;
+using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
 using BankingSystem.Models;
+using MySqlConnector;
 
 namespace BankingSystem.Services;
 
 public interface IUserService
 {
     Task<bool> IsInRole(string username, UserType userType);
-    Task<bool> IndividualHasUserAccount(string nic, string bankAccountNumber);
-    Task<bool> RegisterUser(User user, string password);
+    Task<int> IndividualHasUserAccount(string nic, string bankAccountNumber);
+    Task<bool> RegisterUser(User user, string password, int individualId);
 }
 
 public class UserService : IUserService
@@ -53,20 +55,35 @@ public class UserService : IUserService
         return res;
     }
     
-    public async Task<bool> IndividualHasUserAccount(string nic, string bankAccountNumber)
+    public async Task<int> IndividualHasUserAccount(string nic, string bankAccountNumber)
     {
         var conn =  _dbContext.GetConnection();
-        await conn.OpenAsync();
-        bool res = false;
+        int res = -1;
         try
         {
-            using var cmd = conn.CreateCommand();
-            cmd.CommandText = 
-                "select check_individual_exists_has_user_account(@nic, @account_no, '', @is_individual);";
-            cmd.Parameters.AddWithValue("@nic", nic);
-            cmd.Parameters.AddWithValue("@account_no", bankAccountNumber);
-            cmd.Parameters.AddWithValue("@is_individual", true);
-            res = (bool) await cmd.ExecuteScalarAsync();
+            await conn.OpenAsync();
+            // Create a MySqlCommand to call the stored procedure
+            MySqlCommand cmd = new MySqlCommand("individual_exists_has_user_account", conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            // Set input parameters
+            cmd.Parameters.AddWithValue("@p_nic", nic);
+            cmd.Parameters.AddWithValue("@p_bankAccount", bankAccountNumber);
+
+            // Create output parameters
+            cmd.Parameters.Add(new MySqlParameter("@o_user_id", MySqlDbType.Int32));
+            cmd.Parameters["@o_user_id"].Direction = ParameterDirection.Output;
+
+            cmd.Parameters.Add(new MySqlParameter("@o_individual_id", MySqlDbType.Int32));
+            cmd.Parameters["@o_individual_id"].Direction = ParameterDirection.Output;
+
+            cmd.ExecuteNonQuery();
+
+            int o_user_id = Convert.ToInt32(cmd.Parameters["@o_user_id"].Value);
+            int o_individual_id = Convert.ToInt32(cmd.Parameters["@o_individual_id"].Value);
+
+            if (o_user_id == -1)
+                res= o_individual_id;
         }
         catch (Exception e)
         {
@@ -76,10 +93,10 @@ public class UserService : IUserService
         {
             await conn.CloseAsync();
         }
-        return (bool) res;
+        return res;
     }
 
-    public async Task<bool> RegisterUser(User user, string password)
+    public async Task<bool> RegisterUser(User user, string password, int individualId)
     {
         var conn = _dbContext.GetConnection();
         await conn.OpenAsync();

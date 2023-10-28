@@ -21,6 +21,7 @@ services.AddSingleton<AppDbContext>(_ =>
     new AppDbContext(connectionString));
 
 services.AddScoped<IUserRepository, UserRepository>();
+services.AddScoped<IPasswordService, PasswordService>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
 services.AddScoped<IIndividualRepository, IndividualRepository>();
 services.AddScoped<IUserService, UserService>();

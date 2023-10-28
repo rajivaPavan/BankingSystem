@@ -11,11 +11,14 @@ public class AccountController : Controller
 {
     private readonly IAuthenticationService _authService;
     private readonly IUserService _userService;
+    private readonly IPasswordService _passwordService;
 
-    public AccountController(IAuthenticationService authService, IUserService userService)
+    public AccountController(IAuthenticationService authService, IUserService userService,
+    IPasswordService passwordService)
     {
         _authService = authService;
         _userService = userService;
+        _passwordService = passwordService;
     }
 
     [HttpGet]
@@ -68,9 +71,9 @@ public class AccountController : Controller
         TempData["bankAccountNumber"] = model.BankAccountNumber;
         
         // validate individual using nic and bank account number
-        var hasUserAccount = await _userService.IndividualHasUserAccount(model.NIC, model.BankAccountNumber);
+        var individualId = await _userService.IndividualHasUserAccount(model.NIC, model.BankAccountNumber);
         
-        if (hasUserAccount == true)
+        if (individualId == -1)
         {
             ModelState.AddModelError("", "User already has an account.");
             return View(model);
@@ -79,6 +82,8 @@ public class AccountController : Controller
         // generate and save otp in temp data
         var otp = new Random().Next(100000, 999999).ToString();
         TempData["otp"] = otp;
+        TempData["otpExpiry"] = DateTime.Now.AddMinutes(10);
+        TempData["individualId"] = individualId;
         
         return RedirectToAction("CustomerFinalizeSelfRegister");
     }
@@ -98,8 +103,7 @@ public class AccountController : Controller
             return View(model);
         }
         
-        var nic = TempData["nic"] as string;
-        var bankAccountNumber = TempData["bankAccountNumber"] as string;
+        var individualId = (int)(TempData["individualId"] as int?)!;
         var username = model.Username;
         var password = model.Password;
         var otp = model.OTP;
@@ -119,7 +123,7 @@ public class AccountController : Controller
         };
         
         // register user
-        await _userService.RegisterUser(user, password);
+        await _userService.RegisterUser(user, password, individualId);
         
         return RedirectToAction("Login");
     }

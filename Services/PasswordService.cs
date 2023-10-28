@@ -4,18 +4,19 @@ namespace BankingSystem.Services;
 
 public interface IPasswordService
 {
-    (string Hash, string Salt) HashPassword(string password);
+    string HashPassword(string password);
     bool VerifyPassword(string password, string hash, string salt);
 }
 
 
 public class PasswordService : IPasswordService
 {
-    public (string Hash, string Salt) HashPassword(string password)
+    private readonly string _salt = "abcdefg12345";
+
+    public string HashPassword(string password)
     {
-        string salt = BCrypt.Net.BCrypt.GenerateSalt(12); // Generate a random salt with a cost factor of 12
-        string hash = BCrypt.Net.BCrypt.HashPassword(password, salt);
-        return (hash, salt);
+        string hash = BCrypt.Net.BCrypt.HashPassword(password, _salt);
+        return hash;
     }
 
     public bool VerifyPassword(string password, string hash, string salt)

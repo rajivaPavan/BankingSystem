@@ -77,7 +77,7 @@ public class UserService : IUserService
             cmd.Parameters.Add(new MySqlParameter("@o_individual_id", MySqlDbType.Int32));
             cmd.Parameters["@o_individual_id"].Direction = ParameterDirection.Output;
 
-            cmd.ExecuteNonQuery();
+            await cmd.ExecuteNonQueryAsync();
 
             int o_user_id = Convert.ToInt32(cmd.Parameters["@o_user_id"].Value);
             int o_individual_id = Convert.ToInt32(cmd.Parameters["@o_individual_id"].Value);

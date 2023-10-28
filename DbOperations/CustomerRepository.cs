@@ -8,7 +8,8 @@ namespace BankingSystem.DbOperations;
 
 public interface IIndividualRepository : IRepository<Individual>
 {
-    Task<Individual> GetByNicAsync(string nic);
+    Task<IndividualViewModel> GetIndividualInfoForEmployee(string nic);
+    Task<List<IndividualViewModel>> GetChildIndividualsByNicAsync(string nic);
     Task<int> AddIndividual(IndividualViewModel model);
 }
 
@@ -82,14 +83,45 @@ public class IndividualRepository :  Repository, IIndividualRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Individual> GetByNicAsync(string nic)
+    public async Task<IndividualViewModel> GetIndividualInfoForEmployee(string nic)
     {
         var conn =  _context.GetConnection();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM individual WHERE nic = @nic";
+        cmd.CommandText = "SELECT * FROM individual_bank_account_for_employee " +
+                          "WHERE 'NIC' = @nic";
         cmd.Parameters.AddWithValue("@nic", nic);
         using var reader = await cmd.ExecuteReaderAsync();
-        return await ReadAsync(reader);
+        if (await reader.ReadAsync() == false) return null;
+        var res = GetIndividualViewModel(reader);
+        return res;
+    }
+
+    private static IndividualViewModel GetIndividualViewModel(MySqlDataReader reader)
+    {
+        var individualViewModel = new IndividualViewModel();
+        individualViewModel.FirstName = reader.GetString("first_name");
+        individualViewModel.LastName = reader.GetString("last_name");
+        individualViewModel.BankAccountNumber = reader.GetString("account_no");
+        individualViewModel.BankAccountType = (BankAccountType) reader.GetInt16("account_type");
+        individualViewModel.BankAccountBalance = reader.GetDouble("balance");
+        return individualViewModel;
+    }
+
+    public async Task<List<IndividualViewModel>> GetChildIndividualsByNicAsync(string nic)
+    {
+        var conn =  _context.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT * FROM child_bank_account_for_employee " +
+                          "WHERE guardian_NIC = @nic";
+        cmd.Parameters.AddWithValue("@nic", nic);
+        using var reader = await cmd.ExecuteReaderAsync();
+        var individuals = new List<IndividualViewModel>();
+        while (await reader.ReadAsync())
+        {
+            var res = GetIndividualViewModel(reader);
+            individuals.Add(res);
+        }
+        return individuals;
     }
 
     public async Task<int> AddIndividual(IndividualViewModel model)

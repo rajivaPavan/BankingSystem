@@ -1,18 +1,45 @@
-﻿using BankingSystem.Models;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using BankingSystem.DbOperations;
+using BankingSystem.Models;
 
 namespace BankingSystem.ViewModels;
 
-public class CustomerSearchViewModel
+public class IndividualSearchViewModel
 {
-    public string? ValidateNic { get; set; }
-    public string? ValidateBusinessRegNo { get; set; }
-    public string? SearchNic { get; set; }
-    public string? SearchBusinessRegNo { get; set; }
-    public bool Search { get; set; }
-    public bool? Found { get; set; }
-    public int? IndividualId { get; set; }
+    [Required]
+    [DisplayName("Search by NIC")]
+    public string Nic { get; set; }
+    
+    [DisplayName("Search for child individual")]
+    public bool CheckForChild { get; set; }  
+    
+    /// <summary>
+    /// Used by view to show results.
+    /// </summary>
+    public bool Found { get; set; }
+
+    /// <summary>
+    /// Search result.
+    /// </summary>
+    public IEnumerable<IndividualViewModel> Result { get; set; }
+    
 }
 
-public class IndividualViewModel : Individual
+public class IndividualViewModel
 {
+    public int IndividualId { get; set; }
+    public int CustomerId { get; set; }
+    public string NIC { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public DateTime DateOfBirth { get; set; }
+    public string Email { get; set; }
+    public Gender Gender { get; set; }
+    public string MobileNumber { get; set; }
+    public string? HomeNumber { get; set; }
+    public string Address { get; set; }
+    public string BankAccountNumber { get; set; }
+    public BankAccountType BankAccountType { get; set; }
+    public double BankAccountBalance { get; set; }
 }

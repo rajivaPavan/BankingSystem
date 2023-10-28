@@ -13,8 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 services.AddControllersWithViews();
 services.AddHttpContextAccessor();
+
+var connectionString = builder.Configuration.GetConnectionString("Default");
+
 services.AddSingleton<AppDbContext>(_ => 
-    new AppDbContext(builder.Configuration.GetConnectionString("Default")));
+    new AppDbContext(connectionString));
 
 services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();

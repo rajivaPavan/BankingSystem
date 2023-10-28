@@ -22,63 +22,49 @@ public class CustomersController : Controller
     
     public IActionResult Index()
     {
-        CustomerSearchViewModel model = new();
+        IndividualSearchViewModel model = new();
         model.Found = false;
+        model.Result = new List<IndividualViewModel>();
         return View(model);
     }
     
     [HttpPost]
-    public async Task<IActionResult> SearchIndividual(CustomerSearchViewModel model)
+    public async Task<IActionResult> Index(IndividualSearchViewModel model)
     {
         // validate if customer with nic exists
-        Individual? individual;
+        List<IndividualViewModel> individuals = new();
         try
         {
             await _context.GetConnection().OpenAsync();
-            individual = await _individualRepository
-                .GetByNicAsync(model.Search ? model.SearchNic! : model.ValidateNic!);
+            if (!model.CheckForChild)
+            {
+                var individual = await _individualRepository
+                    .GetIndividualInfoForEmployee(model.Nic);
+                if (individual != null)
+                    individuals.Add(individual);
+            }
+            else
+            {
+                var res = await _individualRepository
+                    .GetChildIndividualsByNicAsync(model.Nic);
+                individuals.AddRange(res);
+            }
+
         }
         finally
         {
             await _context.GetConnection().CloseAsync();
         }
         
-        if (model.Search)
+        if (individuals.Count == 0)
         {
-            // check if nic is valid
-            if(model.SearchNic!.Length != 12)
-            {
-                ModelState.AddModelError("SearchNic", "Invalid NIC.");
-                return View("Index", model);
-            }
-            
-            if(individual == null)
-            {
-                ModelState.AddModelError("SearchNic", "Customer with this NIC does not exist.");
-                return View("Index", model);
-            }
-
-            model.Found = true;
-            model.IndividualId = individual.IndividualId;
+            ModelState.AddModelError("nic", "Customer with this NIC does not exist.");
             return View("Index", model);
         }
         
-        // check if nic is valid
-        if(model.ValidateNic.Length != 12)
-        {
-            ModelState.AddModelError("ValidateNic", "Invalid NIC.");
-            return View("Index", model);
-        }
-        
-        if(individual != null)
-        {
-            ModelState.AddModelError("ValidateNic", "Customer with this NIC already exists.");
-            return View("Index", model);
-        }
-        
-        
-            
-        return RedirectToAction("AddNewIndividual", "Individuals", new {nic=model.ValidateNic});
+        model.Found = true;
+        model.Result = individuals;
+        return View("Index", model);
     }
     
     [HttpPost]
@@ -86,7 +72,7 @@ public class CustomersController : Controller
     {
         // validate if customer with nic exists
         await _context.GetConnection().OpenAsync();
-        var individual = await _individualRepository.GetByNicAsync(nic);
+        var individual = await _individualRepository.GetIndividualInfoForEmployee(nic);
         await _context.GetConnection().CloseAsync();
         
         

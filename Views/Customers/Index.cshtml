@@ -3,7 +3,7 @@
     Layout = "BankLayout";
 }
 
-@model CustomerSearchViewModel
+@model IndividualSearchViewModel
 
 @{
     ViewBag.Title = "New Individual Customer";
@@ -40,111 +40,60 @@
                     <!-- form start -->
                     <form id="search-individual"
                           class="form" asp-controller="Customers"
-                          asp-action="SearchIndividual" method="post">
+                          asp-action="Index" method="post">
                         <div class="card-body">
-                            <div class="form-group mb-0 row">
-                                <label asp-for="ValidateNic" class="col-sm-3 col-form-label">Validate NIC</label>
+                            <div class="form-group row">
+                                <label asp-for="Nic" class="col-sm-3 col-form-label">Validate NIC</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control mr-sm-2"
-                                           id="nic" asp-for="ValidateNic" placeholder="NIC" required>
+                                           id="nic" asp-for="Nic" placeholder="NIC" required>
                                 </div>
-                                <span class="text-danger" asp-validation-for="ValidateNic"></span>
+                                <span class="text-danger" asp-validation-for="Nic"></span>
+                            </div>
+                            <div class="form-group mb-0">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" asp-for="CheckForChild">
+                                    <label asp-for="CheckForChild" class="custom-control-label"></label></div>
                             </div>
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            <input type="hidden" asp-for="Search" value="false">
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
                 </div>
-                <div class="card card-primary">
-                    <div class="card-header">
-                        <h3 class="card-title">Search Individual</h3>
-                    </div>
-                    <!-- /.card-header -->
-                    <!-- form start -->
-                    <form asp-action="SearchIndividual" method="post">
-                        <div class="card-body">
-                            <div class="form-group mb-0 row">
-                                <label asp-for="SearchNic" class="col-sm-3 col-form-label">NIC</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control mr-sm-2"
-                                           id="nic" asp-for="SearchNic" placeholder="NIC" required>
-                                </div>
-                                <span class="text-danger" asp-validation-for="SearchNic"></span>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
-                            <input type="hidden" asp-for="Search" value="true">
-
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            @if (Model.Found != null && Model.Found == true)
-                            {
-                                <a asp-action="ViewIndividual" asp-route-id="@Model.SearchNic" class="btn btn-info">View</a>
-                            }
-                        </div>
-                    </form>
-                </div>
-                <!-- /.card -->
-
             </div>
-
-            <!-- Organizations -->
-            <div class="col-md-6">
-                <!-- general form elements -->
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">Add New Organization</h3>
-                    </div>
-                    <!-- /.card-header -->
-                    <!-- form start -->
-                    <form id="search-org"
-                          class="form" asp-controller="Customers"
-                          asp-action="SearchOrganization" method="post">
-                        <div class="card-body">
-                            <div class="form-group mb-0 row">
-                                <label asp-for="ValidateBusinessRegNo" class="col-sm-4 col-form-label">Validate Reg No</label>
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control mr-sm-2"
-                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No" required>
+            @if (Model.Found)
+            {
+                <div class="col-md-6">
+                    @foreach (var i in Model.Result)
+                    {
+                        <div class="card card-info">
+                            <div class="card-header">
+                                @Model.Nic
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="firstName">Name:</label>
+                                    <p id="firstName">@i.FirstName @i.LastName</p>
                                 </div>
-                                <span class="text-danger" asp-validation-for="ValidateBusinessRegNo"></span>
+                                <div class="form-group">
+                                    <label for="accountNumber">Bank Account Number:</label>
+                                    <p id="accountNumber">@i.BankAccountNumber</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="accountType">Bank Account Type:</label>
+                                    <p id="accountType">@i.BankAccountType.ToString()</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="accountBalance">Bank Account Balance:</label>
+                                    <p id="accountBalance">@i.BankAccountBalance</p>
+                                </div>
                             </div>
                         </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-info">Submit</button>
-                        </div>
-                    </form>
+                    }
                 </div>
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">Search Organization</h3>
-                    </div>
-                    <!-- /.card-header -->
-                    <!-- form start -->
-                    <form asp-action="SearchOrganization" method="post">
-                        <div class="card-body">
-                            <div class="form-group mb-0 row">
-                                <label asp-for="ValidateBusinessRegNo" class="col-sm-4 col-form-label">Reg No</label>
-                                <div class="col-sm-8">
-                                    <input type="text" class="form-control mr-sm-2"
-                                           id="nic" asp-for="ValidateBusinessRegNo" placeholder="Reg No" required>
-                                </div>
-                                <span class="text-danger" asp-validation-for="ValidateBusinessRegNo"></span>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
-                            <button type="submit" class="btn btn-info">Submit</button>
-                        </div>
-                    </form>
-                </div>
-                <!-- /.card -->
-
-            </div>
+            }
         </div>
     </div>
 </section>

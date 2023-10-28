@@ -91,11 +91,9 @@ public class UserRepository : Repository, IUserRepository
     {
         var connection = _dbContext.GetConnection();
         using var cmd = connection.CreateCommand();
-        cmd.CommandText = @"SELECT * FROM user 
-                        WHERE user_name = @u AND user_type = @t;";
+        cmd.CommandText = "CALL has_usertype(@u, @t)";
         cmd.Parameters.AddWithValue("u", username);
         cmd.Parameters.AddWithValue("t", userType);
-        using var reader = await cmd.ExecuteReaderAsync();
-        return reader.HasRows;
+        return (bool) (await cmd.ExecuteScalarAsync() ?? false);
     }
 }

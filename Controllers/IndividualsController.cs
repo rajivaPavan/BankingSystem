@@ -21,17 +21,21 @@ public class IndividualsController : Controller
     }
     
     [HttpGet]
-    public IActionResult AddNewIndividual(string? nic)
+    public IActionResult AddNewIndividual()
     {
+        var nic = TempData["nic"] as string;
+        bool checkForChild = TempData["checkForChild"] as bool? ?? false;
+        
         if (nic == null)
         {
-            return RedirectToAction("Index", "Customers");
+            return RedirectToAction("ManageIndividuals", "Customers");
         }
         var model = new IndividualViewModel()
         {
             NIC = nic
         };
-        return View("AddNewIndividual", model);
+        TempData["nic"] = nic;
+        return View(model);
     }
     
     [HttpPost]
@@ -39,6 +43,9 @@ public class IndividualsController : Controller
     {
         var conn = _context.GetConnection();
         int customerId = -1;
+        if(model.NIC == null)
+            model.NIC = TempData["nic"] as string;
+
         try
         {
             await conn.OpenAsync();
@@ -50,9 +57,13 @@ public class IndividualsController : Controller
         }
 
         if (customerId != -1)
+        {
+            TempData["customerId"] = customerId;
+            TempData["nic"] = model.NIC;
             return RedirectToAction("AddNewBankAccount", 
-                "BankAccount", 
-                new {customerId, nic = model.NIC});
+                "BankAccount");
+        }
+            
         
         return View(model);
     }

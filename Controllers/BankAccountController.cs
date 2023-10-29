@@ -21,8 +21,14 @@ public class BankAccountController : Controller
     }
     
     [HttpGet]
-    public async Task<IActionResult> AddNewBankAccount(int customerId, string nic)
+    public async Task<IActionResult> AddNewBankAccount()
     {
+        var nic = TempData["nic"] as string;
+        var customerId = TempData["customerId"] as int? ?? -1;
+        
+        if(customerId == -1)
+            return RedirectToAction("ManageIndividuals", "Customers");
+        
         var savingsPlans 
             = await _bankAccountService.GetSavingsPlans();
         
@@ -52,7 +58,7 @@ public class BankAccountController : Controller
             ModelState.AddModelError("", e.Message);
         }
 
-        return RedirectToAction("Index", "Customers");
+        return RedirectToAction("ManageIndividuals", "Customers");
     }
     
     [HttpPost]

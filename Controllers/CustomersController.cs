@@ -20,16 +20,16 @@ public class CustomersController : Controller
         _individualRepository = individualRepository;
     }
     
-    public IActionResult Index()
+    public IActionResult ManageIndividuals()
     {
         IndividualSearchViewModel model = new();
         model.Found = false;
-        model.Result = new List<IndividualViewModel>();
+        model.Result = null;
         return View(model);
     }
     
     [HttpPost]
-    public async Task<IActionResult> Index(IndividualSearchViewModel model)
+    public async Task<IActionResult> ManageIndividuals(IndividualSearchViewModel model)
     {
         // validate if customer with nic exists
         List<IndividualViewModel> individuals = new();
@@ -41,7 +41,15 @@ public class CustomersController : Controller
                 var individual = await _individualRepository
                     .GetIndividualInfoForEmployee(model.Nic);
                 if (individual != null)
+                {
+                    if (individual.BankAccountNumber == null)
+                    {
+                        TempData["customerId"] = individual.CustomerId;
+                        TempData["nic"] = model.Nic;
+                    }
+                    
                     individuals.Add(individual);
+                }
             }
             else
             {
@@ -58,13 +66,23 @@ public class CustomersController : Controller
         
         if (individuals.Count == 0)
         {
-            ModelState.AddModelError("nic", "Customer with this NIC does not exist.");
-            return View("Index", model);
+            ModelState.AddModelError("NotFound", "Customer with this NIC does not exist.");
+            model.Found = false;
+            model.Result = individuals;
+            TempData["nic"] = model.Nic;
+            TempData["checkForChild"] = model.CheckForChild;
+            return View("ManageIndividuals", model);
         }
         
         model.Found = true;
         model.Result = individuals;
-        return View("Index", model);
+        
+        return View("ManageIndividuals", model);
+    }
+
+    public IActionResult ManageOrganizations()
+    {
+        return View();
     }
     
     [HttpPost]
@@ -79,31 +97,9 @@ public class CustomersController : Controller
         if (individual != null)
         {
             ModelState.AddModelError("nic", "Customer with this NIC already exists.");
-            return View("Index");
+            return View("ManageIndividuals");
         }
                 
         return RedirectToAction("AddNewIndividual", "Individuals", new {nic});
-    }
-
-    public async Task<IActionResult> ViewIndividual(int individualId)
-    {
-        // validate if customer with nic exists
-        Individual? individual;
-        try
-        {
-            await _context.GetConnection().OpenAsync();
-            individual = await _individualRepository.GetByIdAsync(individualId);
-        }
-        finally
-        {
-            await _context.GetConnection().CloseAsync();
-        }
-        
-        if (individual == null)
-        {
-            return View("Index");
-        }
-        
-        return View(individual);
     }
 }

@@ -39,7 +39,7 @@ public class IndividualViewModel
     public string MobileNumber { get; set; }
     public string? HomeNumber { get; set; }
     public string Address { get; set; }
-    public string BankAccountNumber { get; set; }
+    public string? BankAccountNumber { get; set; }
     public BankAccountType BankAccountType { get; set; }
     public double BankAccountBalance { get; set; }
 }

@@ -37,7 +37,8 @@
                         <div class="card-body">
                             <div class="form-group">
                                 <label asp-for="NIC">NIC</label>
-                                <input type="text" class="form-control" id="nic" asp-for="NIC" disabled required>
+                                <input class="form-control" asp-for="NIC" value="@Model.NIC" readonly
+                                       disabled autocomplete="false">
                             </div>
                             <div class="form-group">
                                 <label asp-for="FirstName">First Name<span class="text-danger">*</span></label>

@@ -74,15 +74,19 @@ public class UserRepository : Repository, IUserRepository
         // return parameters
         cmd.Parameters.Add(new MySqlParameter("@o_user_type", MySqlDbType.Int32));
         cmd.Parameters["@o_user_type"].Direction = ParameterDirection.Output;
-
+        cmd.Parameters.Add(new MySqlParameter("@o_user_id", MySqlDbType.Int32));
+        cmd.Parameters["@o_user_id"].Direction = ParameterDirection.Output;
+        
         await cmd.ExecuteNonQueryAsync();
         
+        var userId = Convert.ToInt32(cmd.Parameters["@o_user_id"].Value);
         var userType = Convert.ToInt32(cmd.Parameters["@o_user_type"].Value);
-        if (userType == -1)
+        if (userId == -1)
             return null;
 
         return new User()
         {
+            UserId = userId,
             UserName = username,
             UserType = (UserType) userType
         };

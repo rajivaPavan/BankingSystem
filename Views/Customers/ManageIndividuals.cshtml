@@ -40,7 +40,7 @@
                     <!-- form start -->
                     <form id="search-individual"
                           class="form" asp-controller="Customers"
-                          asp-action="Index" method="post">
+                          asp-action="ManageIndividuals" method="post">
                         <div class="card-body">
                             <div class="form-group row">
                                 <label asp-for="Nic" class="col-sm-3 col-form-label">Validate NIC</label>
@@ -58,7 +58,12 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            @if (!Model.Found && Model.Result != null)
+                            {
+                                <a asp-action="AddNewIndividual" asp-controller="Individuals"
+                                   class="btn btn-success">Create</a>
+                            }
+                            <button type="submit" class="btn btn-outline-primary float-right">Submit</button>
                         </div>
                     </form>
                 </div>
@@ -77,18 +82,27 @@
                                     <label for="firstName">Name:</label>
                                     <p id="firstName">@i.FirstName @i.LastName</p>
                                 </div>
-                                <div class="form-group">
-                                    <label for="accountNumber">Bank Account Number:</label>
-                                    <p id="accountNumber">@i.BankAccountNumber</p>
-                                </div>
-                                <div class="form-group">
-                                    <label for="accountType">Bank Account Type:</label>
-                                    <p id="accountType">@i.BankAccountType.ToString()</p>
-                                </div>
-                                <div class="form-group">
-                                    <label for="accountBalance">Bank Account Balance:</label>
-                                    <p id="accountBalance">@i.BankAccountBalance</p>
-                                </div>
+                                @if (i.BankAccountNumber != null)
+                                {
+                                    <div class="form-group">
+                                        <label for="accountNumber">Bank Account Number:</label>
+                                        <p id="accountNumber">@i.BankAccountNumber</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accountType">Bank Account Type:</label>
+                                        <p id="accountType">@i.BankAccountType.ToString()</p>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="accountBalance">Bank Account Balance:</label>
+                                        <p id="accountBalance">@i.BankAccountBalance</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    // create account in branch
+                                    <a asp-action="AddNewBankAccount" asp-controller="BankAccount"
+                                       class="btn btn-success">Create Account</a>
+                                }
                             </div>
                         </div>
                     }

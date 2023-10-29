@@ -122,7 +122,7 @@ public class IndividualRepository: IIndividualRepository
         using var cmd = conn.CreateCommand();
         // call the stored procedure to add a new individual
         cmd.CommandText = "CALL add_new_individual(@nic, @first_name, @last_name," +
-                          " @date_of_birth, @customerId, @email, @gender, @mobile_number, @home_number, @address)";
+                          " @date_of_birth, @customerId, @email, @gender, @mobile_number, @home_number, @address, @is_org_member)";
         cmd.Parameters.AddWithValue("@nic", model.NIC);
         cmd.Parameters.AddWithValue("@first_name", model.FirstName);
         cmd.Parameters.AddWithValue("@last_name", model.LastName);
@@ -133,6 +133,7 @@ public class IndividualRepository: IIndividualRepository
         cmd.Parameters.AddWithValue("@home_number", model.HomeNumber);
         cmd.Parameters.AddWithValue("@address", model.Address);
         cmd.Parameters.AddWithValue("@email", model.Email);
+        cmd.Parameters.AddWithValue("@is_org_member", false);
 
         await cmd.ExecuteNonQueryAsync();
 

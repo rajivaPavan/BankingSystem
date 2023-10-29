@@ -51,7 +51,7 @@ public class IndividualViewModel
 public class IndividualBankAccountsViewModelForEmployee
 {
     public List<IndividualViewModel> BankAccounts { get; set; }
-    public bool HasSavingsAccountInBranch { get; set; }
-    public bool HasCurrentAccountInBranch { get; set; }
+    public bool CanMakeSavingsAcc { get; set; }
+    public bool CanMakeCurrentAcc { get; set; }
     public int CustomerId { get; set; }
 }

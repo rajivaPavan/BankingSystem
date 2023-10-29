@@ -63,7 +63,6 @@ public class IndividualsController : Controller
             return RedirectToAction("AddSavingsBankAccount", 
                 "BankAccount", routeValues: new {customerId = customerId});
         }
-            
         
         return View(model);
     }
@@ -82,18 +81,20 @@ public class IndividualsController : Controller
         {
             await conn.CloseAsync();
         }
-        // get branch id from httpcontext
+
         var branchId = int.Parse(HttpContext.User.FindFirst("BranchId")!.Value);
 
-        var hasSavingsAccountInBranch = res.Exists(i => 
+        var personAge = DateTime.Now.Year - res[0].DateOfBirth.Year;
+        var canMakeSavingsAcc = !res.Exists(i => 
             i.BranchId == branchId && i.BankAccountType == BankAccountType.Savings);
-        var hasCurrentAccountInBranch = res.Exists(i => 
-            i.BranchId == branchId && i.BankAccountType == BankAccountType.Current);
+        var canMakeCurrentAcc = !res.Exists(i =>
+                                    i.BranchId == branchId && i.BankAccountType == BankAccountType.Current)
+                                && personAge >= 18;
         var model = new IndividualBankAccountsViewModelForEmployee()
         {
             BankAccounts = res,
-            HasCurrentAccountInBranch = hasCurrentAccountInBranch,
-            HasSavingsAccountInBranch = hasSavingsAccountInBranch,
+            CanMakeCurrentAcc = canMakeCurrentAcc,
+            CanMakeSavingsAcc = canMakeSavingsAcc,
             CustomerId = customerId
         };
         return View(model);

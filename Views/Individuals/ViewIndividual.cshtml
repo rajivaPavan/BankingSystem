@@ -7,7 +7,7 @@
 }
 
 <div class="content">
-    @if (!Model.HasSavingsAccountInBranch)
+    @if (Model.CanMakeSavingsAcc)
     {
         <div class="row my-2">
             <div class="col-6">
@@ -17,7 +17,7 @@
             </div>
         </div>
     }
-    @if (!Model.HasCurrentAccountInBranch)
+    @if (Model.CanMakeCurrentAcc)
     {
         <div class="row my-2">
             <div class="col-6">

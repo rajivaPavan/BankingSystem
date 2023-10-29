@@ -21,16 +21,15 @@ public class BankAccountController : Controller
     }
     
     [HttpGet]
-    public async Task<IActionResult> AddNewBankAccount()
+    public async Task<IActionResult> AddNewBankAccount(int customerId)
     {
         var nic = TempData["nic"] as string;
-        var customerId = TempData["customerId"] as int? ?? -1;
         
         if(customerId == -1)
             return RedirectToAction("ManageIndividuals", "Customers");
         
         var savingsPlans 
-            = await _bankAccountService.GetSavingsPlans();
+            = await _bankAccountService.GetSavingsPlansForCustomer(customerId);
         
         var model = new AddBankAccountViewModel()
         {

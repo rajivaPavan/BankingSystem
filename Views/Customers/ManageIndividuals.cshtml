@@ -100,7 +100,7 @@
                                 else
                                 {
                                     // create account in branch
-                                    <a asp-action="AddNewBankAccount" asp-controller="BankAccount"
+                                    <a asp-action="AddNewBankAccount" asp-controller="BankAccount" asp-route-customerId="@i.CustomerId"
                                        class="btn btn-success">Create Account</a>
                                 }
                             </div>

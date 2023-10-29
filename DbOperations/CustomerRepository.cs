@@ -153,7 +153,8 @@ public class IndividualRepository : Repository, IIndividualRepository
         await cmd.ExecuteNonQueryAsync();
 
         // now get the customer id of the newly added customer
-        cmd.CommandText = "Select customer_id from individual where nic = @search_nic";
+        cmd.CommandText =
+            "Select customer_id from individual where nic = @search_nic ORDER BY customer_id DESC LIMIT 1";
         cmd.Parameters.AddWithValue("@search_nic", model.NIC);
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync() == false) return -1;

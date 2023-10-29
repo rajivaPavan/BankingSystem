@@ -60,7 +60,7 @@ public class IndividualsController : Controller
         {
             TempData["customerId"] = customerId;
             TempData["nic"] = model.NIC;
-            return RedirectToAction("AddSavingsBankAccount", 
+            return RedirectToAction("AddSavingsAccount", 
                 "BankAccount", routeValues: new {customerId = customerId});
         }
         
@@ -84,12 +84,10 @@ public class IndividualsController : Controller
 
         var branchId = int.Parse(HttpContext.User.FindFirst("BranchId")!.Value);
 
-        var personAge = DateTime.Now.Year - res[0].DateOfBirth.Year;
         var canMakeSavingsAcc = !res.Exists(i => 
             i.BranchId == branchId && i.BankAccountType == BankAccountType.Savings);
         var canMakeCurrentAcc = !res.Exists(i =>
-                                    i.BranchId == branchId && i.BankAccountType == BankAccountType.Current)
-                                && personAge >= 18;
+                                    i.BranchId == branchId && i.BankAccountType == BankAccountType.Current);
         var model = new IndividualBankAccountsViewModelForEmployee()
         {
             BankAccounts = res,

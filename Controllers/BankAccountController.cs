@@ -21,7 +21,7 @@ public class BankAccountController : Controller
     }
     
     [HttpGet]
-    public async Task<IActionResult> AddSavingsBankAccount(int customerId)
+    public async Task<IActionResult> AddSavingsAccount(int customerId)
     {
         var nic = TempData["nic"] as string;
         
@@ -51,10 +51,12 @@ public class BankAccountController : Controller
         catch (MySqlException e)
         {
             ModelState.AddModelError("", "Something went wrong. Please try again later.");
+            return View(model);
         }
         catch (Exception e)
         {
             ModelState.AddModelError("", e.Message);
+            return View(model);
         }
 
         return RedirectToAction("ManageIndividuals", "Customers");

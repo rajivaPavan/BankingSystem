@@ -39,7 +39,19 @@ public class IndividualViewModel
     public string MobileNumber { get; set; }
     public string? HomeNumber { get; set; }
     public string Address { get; set; }
+
+    public int BranchId { get; set; }
+    public string BranchName { get; set; }
     public string? BankAccountNumber { get; set; }
     public BankAccountType BankAccountType { get; set; }
     public double BankAccountBalance { get; set; }
+}
+
+
+public class IndividualBankAccountsViewModelForEmployee
+{
+    public List<IndividualViewModel> BankAccounts { get; set; }
+    public bool HasSavingsAccountInBranch { get; set; }
+    public bool HasCurrentAccountInBranch { get; set; }
+    public int CustomerId { get; set; }
 }

@@ -1,6 +1,5 @@
 ﻿using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
-using BankingSystem.Models;
 using BankingSystem.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,12 +41,6 @@ public class CustomersController : Controller
                     .GetIndividualInfoForEmployee(model.Nic);
                 if (individual != null)
                 {
-                    if (individual.BankAccountNumber == null)
-                    {
-                        TempData["customerId"] = individual.CustomerId;
-                        TempData["nic"] = model.Nic;
-                    }
-                    
                     individuals.Add(individual);
                 }
             }

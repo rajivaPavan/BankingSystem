@@ -21,7 +21,7 @@ public class BankAccountController : Controller
     }
     
     [HttpGet]
-    public async Task<IActionResult> AddNewBankAccount(int customerId)
+    public async Task<IActionResult> AddSavingsBankAccount(int customerId)
     {
         var nic = TempData["nic"] as string;
         
@@ -63,6 +63,6 @@ public class BankAccountController : Controller
     [HttpPost]
     public IActionResult AddCurrentAccount(AddBankAccountViewModel model)
     {
-        return View("AddNewBankAccount", model);
+        return View(model);
     }
 }

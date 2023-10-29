@@ -60,11 +60,42 @@ public class IndividualsController : Controller
         {
             TempData["customerId"] = customerId;
             TempData["nic"] = model.NIC;
-            return RedirectToAction("AddNewBankAccount", 
-                "BankAccount");
+            return RedirectToAction("AddSavingsBankAccount", 
+                "BankAccount", routeValues: new {customerId = customerId});
         }
             
         
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ViewIndividual(int customerId)
+    {
+        var conn = _context.GetConnection();
+        List<IndividualViewModel> res;
+        try
+        {
+            await conn.OpenAsync();
+            res = await _individualRepository.GetIndividualBankAccounts(customerId);
+
+        }finally
+        {
+            await conn.CloseAsync();
+        }
+        // get branch id from httpcontext
+        var branchId = int.Parse(HttpContext.User.FindFirst("BranchId")!.Value);
+
+        var hasSavingsAccountInBranch = res.Exists(i => 
+            i.BranchId == branchId && i.BankAccountType == BankAccountType.Savings);
+        var hasCurrentAccountInBranch = res.Exists(i => 
+            i.BranchId == branchId && i.BankAccountType == BankAccountType.Current);
+        var model = new IndividualBankAccountsViewModelForEmployee()
+        {
+            BankAccounts = res,
+            HasCurrentAccountInBranch = hasCurrentAccountInBranch,
+            HasSavingsAccountInBranch = hasSavingsAccountInBranch,
+            CustomerId = customerId
+        };
         return View(model);
     }
 }

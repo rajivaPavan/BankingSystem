@@ -1,0 +1,63 @@
+﻿@using BankingSystem.DbOperations
+@model IndividualBankAccountsViewModelForEmployee
+
+@{
+    ViewBag.Title = "View Individual";
+    Layout = "BankLayout";
+}
+
+<div class="content">
+    @if (!Model.HasSavingsAccountInBranch)
+    {
+        <div class="row my-2">
+            <div class="col-6">
+                <a asp-action="AddSavingsBankAccount" asp-controller="BankAccount" 
+                   asp-route-customerId="@Model.CustomerId"
+                   class="btn btn-primary">Create Savings Account In Branch</a>
+            </div>
+        </div>
+    }
+    @if (!Model.HasCurrentAccountInBranch)
+    {
+        <div class="row my-2">
+            <div class="col-6">
+                <a class="btn btn-info">Create Current Account In Branch</a>
+            </div>
+        </div>
+    }
+    @if (Model.BankAccounts.Count > 0)
+    {
+        var accounts = Model.BankAccounts;
+        var firstPerson = accounts.First();
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@($"{firstPerson.FirstName} {firstPerson.LastName}")</h5>
+                <p class="card-text">Date of Birth: @firstPerson.DateOfBirth.ToShortDateString()</p>
+                <p class="card-text">Mobile Number: @firstPerson.MobileNumber</p>
+                <h6 class="card-subtitle mb-2 text-muted">Branches and Bank Accounts:</h6>
+
+                @foreach (var branch in Model.BankAccounts
+                    .Select(b => new {b.BranchId, b.BranchName}).Distinct())
+                {
+                    <h6>@branch.BranchName</h6>
+                    <ul>
+                        @foreach (var account in accounts.Where(a => a.BranchId == branch.BranchId))
+                        {
+                            <li>
+                                Account Number: @account.BankAccountNumber
+                                <br/>
+                                Account Type: @(account.BankAccountType == BankAccountType.Savings ? "Savings" : "Checking")
+                                <br/>
+                                Account Balance: $@account.BankAccountBalance
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>No data available.</p>
+    }
+</div>

@@ -6,14 +6,15 @@ using MySqlConnector;
 
 namespace BankingSystem.DbOperations;
 
-public interface IIndividualRepository : IRepository<Individual>
+public interface IIndividualRepository
 {
     Task<IndividualViewModel> GetIndividualInfoForEmployee(string nic);
     Task<List<IndividualViewModel>> GetChildIndividualsByNicAsync(string nic);
     Task<int> AddIndividual(IndividualViewModel model);
+    Task<List<IndividualViewModel>> GetIndividualBankAccounts(int customerId);
 }
 
-public class IndividualRepository : Repository, IIndividualRepository
+public class IndividualRepository: IIndividualRepository
 {
     private readonly AppDbContext _context;
 
@@ -64,53 +65,36 @@ public class IndividualRepository : Repository, IIndividualRepository
         return individuals;
     }
 
-    public Task<Individual> GetByIdAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task CreateAsync(Individual entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateAsync(Individual entity)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<IndividualViewModel> GetIndividualInfoForEmployee(string nic)
     {
         var conn = _context.GetConnection();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM minimal_individual_bank_account_view WHERE NIC = @nic";
+        cmd.CommandText = "SELECT * FROM minimal_individual_view WHERE NIC = @nic";
         cmd.Parameters.AddWithValue("@nic", nic);
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync() == false) return null;
         var res = GetIndividualViewModel(reader);
         return res;
     }
-
+    
     private static IndividualViewModel GetIndividualViewModel(MySqlDataReader reader)
     {
         var individualViewModel = new IndividualViewModel();
         individualViewModel.FirstName = reader.GetString("first_name");
         individualViewModel.LastName = reader.GetString("last_name");
         individualViewModel.CustomerId = reader.GetInt32("customer_id");
-        // individualViewModel.BankAccountNumber = reader.GetString("account_no");
-        // handle null
-        if (!reader.IsDBNull(reader.GetOrdinal("account_no")))
-        {
-            individualViewModel.BankAccountNumber = reader.GetString(reader.GetOrdinal("account_no"));
-            individualViewModel.BankAccountType = (BankAccountType) reader.GetInt16(reader.GetOrdinal("account_type"));
-            individualViewModel.BankAccountBalance = reader.GetDouble(reader.GetOrdinal("balance"));
-        }
+        return individualViewModel;
+    }
 
+    private static IndividualViewModel GetFullIndividualViewModel(MySqlDataReader reader)
+    {
+        var individualViewModel = new IndividualViewModel();
+        individualViewModel.FirstName = reader.GetString("first_name");
+        individualViewModel.LastName = reader.GetString("last_name");
+        individualViewModel.CustomerId = reader.GetInt32("customer_id");
+        individualViewModel.NIC = reader.GetString("NIC");
+        individualViewModel.DateOfBirth = reader.GetDateTime("date_of_birth");
+        individualViewModel.MobileNumber = reader.GetString("mobile_number");
         return individualViewModel;
     }
 
@@ -118,7 +102,7 @@ public class IndividualRepository : Repository, IIndividualRepository
     {
         var conn = _context.GetConnection();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT * FROM minimal_child_bank_account_view " +
+        cmd.CommandText = "SELECT * FROM minimal_child_and_guardian_view " +
                           "WHERE guardian_NIC = @nic";
         cmd.Parameters.AddWithValue("@nic", nic);
         using var reader = await cmd.ExecuteReaderAsync();
@@ -159,5 +143,35 @@ public class IndividualRepository : Repository, IIndividualRepository
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync() == false) return -1;
         return reader.GetInt32("customer_id");
+    }
+
+    public async Task<List<IndividualViewModel>> GetIndividualBankAccounts(int customerId)
+    {
+        var conn = _context.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = 
+            @"SELECT i.customer_id as customer_id, 
+            ba.branch_id as branch_id, b.name as branch_name, i.*, ba.*, b.* 
+            FROM (SELECT * FROM individual WHERE customer_id = @customer_id) 
+                as i left JOIN 
+            bank_account as ba on i.customer_id = ba.customer_id 
+                join branch as b on ba.branch_id = b.branch_id;";
+        cmd.Parameters.AddWithValue("@customer_id", customerId);
+        using var reader = await cmd.ExecuteReaderAsync();
+        var individuals = new List<IndividualViewModel>();
+        // read all rows to get bank accounts
+        while (await reader.ReadAsync())
+        {
+            var individual = GetFullIndividualViewModel(reader);
+            individual.BankAccountNumber = reader.GetString("account_no");
+            individual.BankAccountType = reader.GetSByte("account_type") == 0 ? 
+                    BankAccountType.Current : BankAccountType.Savings;
+            individual.BankAccountBalance = reader.GetDouble("balance");
+            individual.BranchId = reader.GetInt32("branch_id");
+            individual.BranchName = reader.GetString("branch_name");
+            individuals.Add(individual);
+        }
+        
+        return individuals;
     }
 }

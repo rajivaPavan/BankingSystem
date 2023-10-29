@@ -1,10 +1,11 @@
 ﻿-- Add trigger to check if bank account with same customer id and branch id exists
 
+drop trigger check_bank_account_exists;
 create trigger check_bank_account_exists
 before insert on bank_account
 for each row
 begin
-    if exists (select * from bank_account where customer_id = new.customer_id and branch_id = new.branch_id) then
+    if exists (select * from bank_account where customer_id = new.customer_id and branch_id = new.branch_id and account_type=new.account_type) then
         signal sqlstate '45000' set message_text = 'Bank account already exists';
     end if;
 end;

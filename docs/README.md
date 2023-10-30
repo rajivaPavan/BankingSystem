@@ -137,6 +137,9 @@ Explain the structure and organization of the database schema, including its com
 ### `register_individual_user`
 - Registers an individual user and associates them with a user account.
 
+### `register_banker_user`
+- Registers a banker user by adding a record to the user table and updating the employee table with the associated user ID. It allows the creation of user accounts for employees who are designated as bankers(employees/managers).
+
 ## 7. Indexes
 
 ### `user_name_index`

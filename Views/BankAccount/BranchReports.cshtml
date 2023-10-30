@@ -1,0 +1,171 @@
+﻿@model IEnumerable<BankingSystem.ViewModels.BranchReportViewModel>
+@{
+    ViewBag.Title = "Branch Report";
+    Layout = "BankLayout";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Transaction Reports</h3>
+                    </div>    
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <a id="printTable" class="btn btn-secondary" href="javascript:void(0)" data-shuffle> Print </a>
+                            <div class="float-right">
+                                <label for="branchSelector">Select the Branch ID:</label>
+                                <select id="branchSelector" class="custom-select" style="width: auto">
+                                    <option value="all">All</option>
+                                    <!-- Branch IDs will be dynamically populated here -->
+                                </select>
+                                <label for="startDate">Select Start Date:</label>
+                                <input type="date" id="startDate" name="startDate"> <!-- Start date for time period -->
+                                <label for="endDate">Select End Date:</label>
+                                <input type="date" id="endDate" name="endDate"> <!-- End date for time period -->
+                                <label for="tableSelector">Select Table:</label>
+                                <select id="tableSelector" class="custom-select" style="width: auto">
+                                    <option value="Incomes">Incomes</option>
+                                    <option value="Outcomes">Outcomes</option>
+                                </select>
+                                <button id="searchButton" class="btn btn-primary" onclick="filterData()">Search</button> <!-- Search button -->
+                            </div>
+                        </div>
+
+                        <table id="incomeTable" class="table table-bordered table-hover" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Account Number</th>
+                                    <th>Branch ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var report in Model)
+                                {
+                                    foreach (var income in report.Incomes)
+                                    {
+                                        <tr>
+                                            <td>@income.AccountNumber</td>
+                                            <td>@income.BranchId</td>
+                                            <td>@income.OpeningDate</td>
+                                            <td>@income.Amount</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+
+                        <table id="outcomeTable" class="table table-bordered table-hover" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Account Number</th>
+                                    <th>Branch ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var report in Model)
+                                {
+                                    foreach (var outcome in report.Outcomes)
+                                    {
+                                        <tr>
+                                            <td>@outcome.AccountNumber</td>
+                                            <td>@outcome.BranchId</td>
+                                            <td>@outcome.OpeningDate</td>
+                                            <td>@outcome.Amount</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var branchIds = [];
+        @foreach (var report in Model)
+        {
+            foreach (var income in report.Incomes)
+            {
+                <text>branchIds.push('@income.BranchId');</text>
+            }
+            foreach (var outcome in report.Outcomes)
+            {
+                <text>branchIds.push('@outcome.BranchId');</text>
+            }
+        }
+        branchIds = [...new Set(branchIds)];
+        branchIds.forEach(function(id) {
+            $('#branchSelector').append(`<option value="${id}">${id}</option>`);
+        });
+
+        $('#searchButton').click(function () {
+            filterData();
+            if ($('#tableSelector').val() === 'Incomes') {
+                $('#outcomeTable').hide();
+            } else {
+                $('#incomeTable').hide();
+            }
+        });
+    });
+
+    function filterData() {
+        var branchId = $('#branchSelector').val();
+        var startDate = new Date($('#startDate').val());
+        var endDate = new Date($('#endDate').val());
+        var selectedTable = $('#tableSelector').val();
+
+        if (startDate === 'Invalid Date' || endDate === 'Invalid Date') {
+            alert('Please provide valid start and end dates.');
+            return;
+        }
+
+        $('#incomeTable tbody tr, #outcomeTable tbody tr').hide();
+
+        if (selectedTable === 'Incomes') {
+            $('#incomeTable tbody tr').each(function () {
+                var rowTimestamp = new Date($(this).find('td:nth-child(3)').text());
+                var rowBranchId = $(this).find('td:nth-child(2)').text();
+
+                if ((rowTimestamp >= startDate && rowTimestamp <= endDate) || (startDate === '' && endDate === '')) {
+                    if (rowBranchId === branchId || branchId === 'all') {
+                        $(this).show();
+                    }
+                }
+            });
+            $('#incomeTable').show();
+        } else if (selectedTable === 'Outcomes') {
+            $('#outcomeTable tbody tr').each(function () {
+                var rowTimestamp = new Date($(this).find('td:nth-child(3)').text());
+                var rowBranchId = $(this).find('td:nth-child(2)').text();
+
+                if ((rowTimestamp >= startDate && rowTimestamp <= endDate) || (startDate === '' && endDate === '')) {
+                    if (rowBranchId === branchId || branchId === 'all') {
+                        $(this).show();
+                    }
+                }
+            });
+            $('#outcomeTable').show();
+        }
+    }
+</script>
+
+<style>
+    .btn.active {
+        background-color: #007bff; 
+        color: white;
+    }
+</style>
+
+

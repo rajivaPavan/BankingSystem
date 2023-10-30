@@ -79,29 +79,100 @@ Explain the structure and organization of the database schema, including its com
 (Repeat this section for each table)
 
 ## 5. Views
-Provide details about any views created in the database, including their purpose and parameters.
+
+### minimal_bank_account_view
+- **Purpose:** This view provides a minimal representation of bank accounts, including account number, branch ID, customer ID, balance, opening date, account status, and account type.
+
+### minimal_child_and_guardian_view
+- **Purpose:** This view combines child and guardian information, including individual ID, customer ID, first name, last name, date of birth, guardian's NIC, guardian's first name, and guardian's date of birth.
+
+### minimal_child_bank_account_view
+- **Purpose:** This view combines child, guardian, and bank account information, including customer ID, individual ID, guardian's NIC, first name, last name, date of birth, account number, balance, opening date, account status, and account type.
+
+### minimal_child_individual_view
+- **Purpose:** This view represents individual children with limited information, including individual ID, customer ID, NIC, first name, last name, and date of birth. It filters individuals under 18 years old.
+
+### minimal_individual_bank_account_view
+- **Purpose:** This view combines individual and bank account information, including customer ID, individual ID, NIC, first name, last name, date of birth, account number, balance, opening date, account status, and account type.
+
+### minimal_individual_view
+- **Purpose:** This view represents individual customers who are not organization members and are over 18 years old. It includes individual ID, customer ID, NIC, first name, last name, and date of birth.
+
+### organization_view_for_employee
+- **Purpose:** This view provides an overview of organizations, including registration number, name, customer ID, type, address, company email, individual ID, position, first name, last name, and NIC of employees within the organization.
+
 
 ## 6. Stored Procedures and Triggers
 
-Provide details about any stored procedures, triggers, or functions used in the database, including their purpose and parameters.
+### `add_new_individual`
+- Adds a new individual to the system.
+
+### `add_organization_individual`
+- Adds an individual to an organization.
+
+### `add_savings_account`
+- Creates a new savings account, considering initial deposit requirements.
+
+### `authenticate_user`
+- Authenticates a user and retrieves user type and ID.
+
+### `calculate_savings_interest`
+- Calculates and records interest for active savings accounts.
+
+### `check_individual_exists`
+- Checks if an individual with a specific NIC exists.
+
+### `check_organization_exists`
+- Checks if an organization with a specific registration number exists.
+
+### `create_organization_with_individual`
+- Creates a new organization with an associated individual.
+
+### `has_usertype`
+- Checks if a user has a specified user type.
+
+### `individual_exists_has_user_account`
+- Checks if an individual with an associated bank account has a user account.
+
+### `register_individual_user`
+- Registers an individual user and associates them with a user account.
 
 ## 7. Indexes
 
-List and describe any indexes created on the tables for performance optimization.
+### `user_name_index`
+- **Purpose:** This index is created on the `user_name` column in the `user` table of the `bank_management_system` database. It is used to optimize and speed up queries that involve searching for users by their usernames.
 
-## 8. Security and Access Control
+## 8. Triggers
 
-Explain who has access to the database and detail the permissions and access control mechanisms in place.
+### `user_name_unique`
+- **Purpose:** This trigger is designed to ensure the uniqueness of the `user_name` in the `user` table of the `bank_management_system` database. It runs before an insert operation and checks if a user with the same username already exists. If a duplicate `user_name` is detected, it raises an error.
+- **Trigger Type:** Before Insert
+- **Affected Table:** `user`
+- **Event:** For Each Row
+- **Error Handling:** If a duplicate `user_name` is found, the trigger signals a SQLSTATE '45000' error with the message 'user_name must be unique.'
 
+### `check_bank_account_exists`
+- **Purpose:** This trigger checks for the existence of a bank account before inserting a new record into the `bank_account` table. It ensures that a bank account with the same `customer_id`, `branch_id`, and `account_type` does not already exist. If a duplicate is detected, it raises an error.
+- **Trigger Type:** Before Insert
+- **Affected Table:** `bank_account`
+- **Event:** For Each Row
+- **Error Handling:** If a duplicate bank account is found, the trigger signals a SQLSTATE '45000' error with the message 'Bank account already exists.'
 
-## 9. Backup and Recovery
+### `check_individual_exists_trigger`
+- **Purpose:** This trigger is designed to prevent the insertion of duplicate individual records in the `individual` table. It checks for the existence of an individual with the same `customer_id` and `is_organization_member` set to false. If a duplicate is detected, it raises an error.
+- **Trigger Type:** Before Insert
+- **Affected Table:** `individual`
+- **Event:** For Each Row
+- **Error Handling:** If a duplicate individual is found, the trigger signals a SQLSTATE '45000' error with the message 'Individual already exists.'
 
-Document the backup and recovery procedures for the database to ensure data safety.
+## 9. Events
 
+### `calculate_savings_interest`
+- **Purpose:** This event is scheduled to run every day to calculate and record interest for active savings accounts. It calls the `calculate_savings_interest()` stored procedure, which performs interest calculations and inserts them into the transactions table.
+- **Schedule:** The event is scheduled to run every day (`every 1 DAY`) and starts one day from the current date (`starts CURDATE() + INTERVAL 1 DAY`).
+- **Enabled:** The event is enabled, meaning it will execute according to the defined schedule.
 
-## 10. Sample Queries
-
-Provide sample SQL queries that demonstrate how to interact with the database.
+This event automates the process of calculating savings account interest on a daily basis, ensuring timely and accurate interest calculations for active accounts.
 
 ---
 

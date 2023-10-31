@@ -73,7 +73,17 @@ public class AccountController : Controller
     public async Task<IActionResult> CustomerSelfRegister(CustomerSelfRegistrationViewModel model)
     { 
         // validate individual using nic and bank account number
-        var individualId = await _userService.IndividualHasUserAccount(model.NIC, model.BankAccountNumber);
+        var individualId = -1;
+        try
+        {
+            individualId = await _userService.IndividualValidationForRegistration(
+                model.NIC, model.BankAccountNumber, model.MobileNumber);
+            
+        }catch (Exception e)
+        {
+            ModelState.AddModelError("", e.Message);
+            return View(model);
+        }
         
         if (individualId == -1)
         {

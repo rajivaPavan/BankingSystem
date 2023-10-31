@@ -57,3 +57,25 @@ end;
 -- make user_id of employee nullable
 alter table employee
     modify user_id int;
+
+drop procedure if exists individual_exists_has_user_account;
+create procedure 
+    individual_exists_has_user_account(IN p_nic varchar(12),
+    IN p_bankAccount varchar(16),
+    OUT o_user_id int, OUT o_individual_id int)
+BEGIN
+    SELECT user_id,
+           individual_id,
+           mobile_number
+    INTO o_user_id, o_individual_id
+    FROM (SELECT customer_id FROM bank_account AS b WHERE b.account_no = p_bankAccount) AS ba
+             JOIN customer AS c ON ba.customer_id = c.id
+             JOIN individual AS i ON c.id = i.customer_id
+    WHERE i.nic = p_nic;
+
+    IF o_user_id IS NULL THEN
+        SET o_user_id = -1;
+    end if;
+
+END;
+

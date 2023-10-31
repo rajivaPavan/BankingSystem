@@ -9,7 +9,7 @@ namespace BankingSystem.Services;
 public interface IUserService
 {
     Task<bool> IsInRole(string username, UserType userType);
-    Task<int> IndividualHasUserAccount(string nic, string bankAccountNumber);
+    Task<int> IndividualValidationForRegistration(string nic, string bankAccountNumber, string checkMobileNumber);
     Task<bool> RegisterIndividualUser(User user, string password, int individualId);
     Task RegisterEmployeeUser(User user, string password, int employeeId);
 }
@@ -55,36 +55,52 @@ public class UserService : IUserService
         await _dbContext.GetConnection().CloseAsync();
         return res;
     }
-    
-    public async Task<int> IndividualHasUserAccount(string nic, string bankAccountNumber)
+
+    /// <param name="nic"></param>
+    /// <param name="bankAccountNumber"></param>
+    /// <param name="checkMobileNumber"></param>
+    /// <returns>individual_id if valid else -1</returns>
+    public async Task<int> IndividualValidationForRegistration(string nic, string bankAccountNumber, string checkMobileNumber)
     {
         var conn =  _dbContext.GetConnection();
-        int res = -1;
+        var individualId = -1;
+
+        var mobileNumber = "";
         try
         {
             await conn.OpenAsync();
-            // Create a MySqlCommand to call the stored procedure
-            MySqlCommand cmd = new MySqlCommand("individual_exists_has_user_account", conn);
-            cmd.CommandType = CommandType.StoredProcedure;
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT user_id,
+                   individual_id,
+                   mobile_number
+            FROM (SELECT customer_id FROM bank_account AS b WHERE b.account_no = @acc_no) AS ba
+                     JOIN customer AS c ON ba.customer_id = c.id
+                     JOIN individual AS i ON c.id = i.customer_id
+            WHERE i.nic = @nic";
+            
+            cmd.Parameters.AddWithValue("@acc_no", bankAccountNumber);
+            cmd.Parameters.AddWithValue("@nic", nic);
 
-            // Set input parameters
-            cmd.Parameters.AddWithValue("@p_nic", nic);
-            cmd.Parameters.AddWithValue("@p_bankAccount", bankAccountNumber);
-
-            // Create output parameters
-            cmd.Parameters.Add(new MySqlParameter("@o_user_id", MySqlDbType.Int32));
-            cmd.Parameters["@o_user_id"].Direction = ParameterDirection.Output;
-
-            cmd.Parameters.Add(new MySqlParameter("@o_individual_id", MySqlDbType.Int32));
-            cmd.Parameters["@o_individual_id"].Direction = ParameterDirection.Output;
-
-            await cmd.ExecuteNonQueryAsync();
-
-            int o_user_id = Convert.ToInt32(cmd.Parameters["@o_user_id"].Value);
-            int o_individual_id = Convert.ToInt32(cmd.Parameters["@o_individual_id"].Value);
-
-            if (o_user_id == -1)
-                res= o_individual_id;
+            var userId = -1;
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                if (!reader.IsDBNull(reader.GetOrdinal("user_id")))
+                    userId = reader.GetInt32(0);
+                if (userId != -1)
+                    return -1;
+                if (!reader.IsDBNull(reader.GetOrdinal("individual_id")))
+                    individualId = reader.GetInt32(1);
+                else
+                {
+                    throw new Exception("Individual does not exist");
+                }
+                // if individual exists so does mobile number
+                if(individualId == -1)
+                    return -1;
+                
+                mobileNumber = reader.GetString(2);
+            }
         }
         catch (Exception e)
         {
@@ -94,7 +110,11 @@ public class UserService : IUserService
         {
             await conn.CloseAsync();
         }
-        return res;
+        if(checkMobileNumber != mobileNumber)
+            throw new Exception("Invalid mobile number");
+        
+        return individualId;
+        
     }
 
     public async Task<bool> RegisterIndividualUser(User user, string password, int individualId)

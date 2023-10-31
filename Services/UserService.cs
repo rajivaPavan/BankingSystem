@@ -12,6 +12,7 @@ public interface IUserService
     Task<int> IndividualValidationForRegistration(string nic, string bankAccountNumber, string checkMobileNumber);
     Task<bool> RegisterIndividualUser(User user, string password, int individualId);
     Task RegisterEmployeeUser(User user, string password, int employeeId);
+    Task<bool> EmployeeValidationForRegistration(int? modelEmployeeId, string modelMobileNumber);
 }
 
 public class UserService : IUserService
@@ -104,7 +105,8 @@ public class UserService : IUserService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            await conn.CloseAsync();
+            throw new Exception(e.Message);
         }
         finally
         {
@@ -173,5 +175,60 @@ public class UserService : IUserService
         {
             await conn.CloseAsync();
         }
+    }
+
+    public async Task<bool> EmployeeValidationForRegistration(int? modelEmployeeId, string modelMobileNumber)
+    {
+        var conn = _dbContext.GetConnection();
+        var employeeId = -1;
+        var mobileNumber = "";
+        try
+        {
+            await conn.OpenAsync();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT user_id,
+                   employee_id,
+                   mobile_number
+            FROM employee AS e
+            WHERE e.employee_id = @id";
+            
+            cmd.Parameters.AddWithValue("@id", modelEmployeeId);
+
+            var userId = -1;
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                if (!reader.IsDBNull(reader.GetOrdinal("user_id")))
+                    userId = reader.GetInt32(0);
+                if (userId != -1)
+                    throw new Exception("Employee already has a user account");
+                
+                if (!reader.IsDBNull(reader.GetOrdinal("employee_id")))
+                    employeeId = reader.GetInt32(1);
+                else
+                {
+                    throw new Exception("Employee does not exist");
+                }
+                // if employee exists so does mobile number
+                if(employeeId == -1)
+                    return false;
+                
+                mobileNumber = reader.GetString(2);
+            }
+        }
+        catch (Exception e)
+        {
+            await conn.CloseAsync();
+            throw new Exception(e.Message);
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
+        // check if mobile number matches
+        if(modelMobileNumber != mobileNumber)
+            throw new Exception("Invalid mobile number");
+        
+        return true;
     }
 }

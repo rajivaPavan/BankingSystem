@@ -131,9 +131,6 @@ Explain the structure and organization of the database schema, including its com
 ### `has_usertype`
 - Checks if a user has a specified user type.
 
-### `individual_exists_has_user_account`
-- Checks if an individual with an associated bank account has a user account.
-
 ### `register_individual_user`
 - Registers an individual user and associates them with a user account.
 

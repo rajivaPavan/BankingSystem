@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using BankingSystem.DbOperations;
+﻿
 using BankingSystem.Models;
 using BankingSystem.Services;
 using BankingSystem.ViewModels;
@@ -105,6 +104,15 @@ public class AccountController : Controller
     {
         if(ModelState.IsValid == false)
             return View(model);
+
+        try
+        {
+             await _userService.EmployeeValidationForRegistration(model.EmployeeId, model.MobileNumber);
+        }catch (Exception e)
+        {
+            ModelState.AddModelError("", e.Message);
+            return View(model);
+        }
         
         // generate and save otp in temp data
         var otp = new Random().Next(100000, 999999).ToString();

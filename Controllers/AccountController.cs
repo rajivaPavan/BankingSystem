@@ -62,9 +62,15 @@ public class AccountController : Controller
     {
         return View();
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> EmployeeSelfRegister()
+    {
+        return View();
+    }
 
     [HttpPost]
-    public async Task<IActionResult> CustomerSelfRegister(SelfRegistrationViewModel model)
+    public async Task<IActionResult> CustomerSelfRegister(CustomerSelfRegistrationViewModel model)
     { 
         // validate individual using nic and bank account number
         var individualId = await _userService.IndividualHasUserAccount(model.NIC, model.BankAccountNumber);
@@ -83,9 +89,30 @@ public class AccountController : Controller
         
         return RedirectToAction("CustomerFinalizeSelfRegister");
     }
+
+    [HttpPost]
+    public async Task<IActionResult> EmployeeSelfRegister(EmployeeSelfRegistrationViewModel model)
+    {
+        if(ModelState.IsValid == false)
+            return View(model);
+        
+        // generate and save otp in temp data
+        var otp = new Random().Next(100000, 999999).ToString();
+        TempData["otp"] = otp;
+        TempData["otpExpiry"] = DateTime.Now.AddMinutes(10).ToString("g");
+        TempData["employeeId"] = model.EmployeeId;
+        
+        return RedirectToAction("EmployeeFinalizeSelfRegister");
+    }
     
     [HttpGet]
     public async Task<IActionResult> CustomerFinalizeSelfRegister()
+    {
+        return View();
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> EmployeeFinalizeSelfRegister()
     {
         return View();
     }
@@ -138,6 +165,55 @@ public class AccountController : Controller
         return RedirectToAction("Login");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> EmployeeFinalizeSelfRegister(FinalizeSelfRegisterViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError("", "Invalid");
+            return View(model);
+        }
+        
+        var employeeId = (TempData["employeeId"] as int?);
+        var otp = model.OTP;
+        if (employeeId == null)
+        {
+            ModelState.AddModelError("","Error Occurred. Try again");
+            return RedirectToAction("EmployeeSelfRegister");
+        }
+        
+        var username = model.Username;
+        var password = model.Password;
+        
+        // validate otp
+        var tempOtp = TempData["otp"] as string;
+        // check if tempOtp expired or not
+        var tempOtpExpiry = DateTime.Parse(TempData["otpExpiry"] as string ?? string.Empty);
+        if (tempOtpExpiry < DateTime.Now)
+        {
+            ModelState.AddModelError("", "OTP has expired");
+            return RedirectToAction("EmployeeSelfRegister");
+        }
+        
+        if (tempOtp != otp || tempOtp == null)
+        {
+            ModelState.AddModelError("", "Invalid OTP. Please try again.");
+            return View(model);
+        }
+        
+        var user = new User()
+        {
+            UserName = username,
+            UserType = UserType.Employee
+        };
+        
+        password = _passwordService.HashPassword(password);
+        // register user
+        await _userService.RegisterEmployeeUser(user, password, (int)employeeId);
+        
+        return RedirectToAction("Login");
+    }
+    
     [HttpGet]
     [Route("/otpdemo")]
     public IActionResult OtpDemo()
@@ -146,6 +222,4 @@ public class AccountController : Controller
         TempData["otp"] = otp;
         return Json(new {otp});
     }
-    
-    
 }

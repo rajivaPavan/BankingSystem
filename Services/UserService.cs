@@ -11,6 +11,7 @@ public interface IUserService
     Task<bool> IsInRole(string username, UserType userType);
     Task<int> IndividualHasUserAccount(string nic, string bankAccountNumber);
     Task<bool> RegisterIndividualUser(User user, string password, int individualId);
+    Task RegisterEmployeeUser(User user, string password, int employeeId);
 }
 
 public class UserService : IUserService
@@ -111,10 +112,13 @@ public class UserService : IUserService
         
             await cmd.ExecuteNonQueryAsync();
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            Console.WriteLine(e);
-            return false;
+            if (e.SqlState == "45000")
+            {
+                await conn.CloseAsync();
+                throw new Exception("Individual already has a user account");
+            }
         }
         finally
         {
@@ -122,5 +126,32 @@ public class UserService : IUserService
         }
         
         return true;
+    }
+
+    public async Task RegisterEmployeeUser(User user, string password, int employeeId)
+    {
+        var conn = _dbContext.GetConnection();
+        await conn.OpenAsync();
+        try
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "CALL register_banker_user(@user_name, @password_hash, @employee_id);";
+            cmd.Parameters.AddWithValue("@user_name", user.UserName);
+            cmd.Parameters.AddWithValue("@password_hash", password);
+            cmd.Parameters.AddWithValue("employee_id", employeeId);
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (MySqlException e)
+        {
+            if (e.SqlState == "45000")
+            {
+                await conn.CloseAsync();
+                throw new Exception("Employee already has a user account");
+            }
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
     }
 }

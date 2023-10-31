@@ -1,7 +1,7 @@
-﻿@model CustomerSelfRegistrationViewModel
+﻿@model EmployeeSelfRegistrationViewModel
 
 @{
-    ViewBag.Title = "Customer Self Register";
+    ViewBag.Title = "Employee Self Register";
     Layout = "Layout";
 }
 
@@ -27,8 +27,8 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input class="form-control" asp-for="BankAccountNumber" 
-                               placeholder="Bank Account Number" required>
+                        <input class="form-control" asp-for="EmployeeId" 
+                               placeholder="Employee Id" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-id-card"></span>

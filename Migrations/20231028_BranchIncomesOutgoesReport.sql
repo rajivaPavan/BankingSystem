@@ -8,7 +8,7 @@ UNION ALL
 SELECT tr.account_no, ba.branch_id, tr.time_stamp, tr.amount         -- FOR deposits of each acc. 
 FROM transactions AS tr
 JOIN bank_account AS ba ON tr.account_no = ba.account_no
-WHERE tr.transaction_type = '0'   -- ****** PLEASE CHANGE THIS ACCORDING TO THE CONVENTION YOU USE ******
+WHERE tr.transaction_type = 0   -- ****** PLEASE CHANGE THIS ACCORDING TO THE CONVENTION YOU USE ******
 UNION ALL
 SELECT tr.from_account_no, ba2.branch_id, tr.time_stamp, tr.amount   -- FOR getting money from another branch acc.  
 FROM transfer tr
@@ -24,7 +24,7 @@ CREATE VIEW outgo_report_view_for_employees AS
 SELECT tr.account_no, ba.branch_id, tr.time_stamp, tr.amount    -- FOR withdraw of each acc.
 FROM transactions AS tr
 JOIN bank_account AS ba ON tr.account_no = ba.account_no
-WHERE tr.transaction_type = '1'  -- ****** PLEASE CHANGE THIS ACCORDING TO THE CONVENTION YOU USE ******
+WHERE tr.transaction_type = 1  -- ****** PLEASE CHANGE THIS ACCORDING TO THE CONVENTION YOU USE ******
 UNION ALL
 SELECT tr.to_account_no, ba.branch_id, tr.time_stamp, tr.amount     -- FOR transfer to another branch acc.
 FROM transfer tr

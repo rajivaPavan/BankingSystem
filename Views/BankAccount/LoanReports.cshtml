@@ -1,0 +1,144 @@
+﻿@model IEnumerable<BankingSystem.ViewModels.LoanReportViewModel>
+@{
+    ViewBag.Title = "Loans Report";
+    Layout = "BankLayout";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Late Loan Installment Reports</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <a id="printTable" class="btn btn-secondary" href="javascript:void(0)" data-shuffle> Print </a>
+                            <div class="float-right">         
+                                <label for="branchSelector">Select the Branch ID:</label>
+                                <select id="branchSelector" class="custom-select" style="width: auto">
+                                    <option value="all">All</option>
+                                    <!-- Branch IDs will be dynamically populated here -->
+                                </select>
+                                <label for="startDate">Select Start Date:</label>
+                                <input type="date" id="startDate" name="startDate"> <!-- Start date for time period -->
+                                <label for="endDate">Select End Date:</label>
+                                <input type="date" id="endDate" name="endDate"> <!-- End date for time period -->                               
+                                <button id="searchButton" class="btn btn-primary" onclick="filterData()">Search</button> <!-- Search button -->
+                            </div>
+                        </div>
+
+                        <table id="loanTable" class="table table-bordered table-hover" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Customer ID</th>
+                                    <th>NIC number</th>
+                                    <th>Name</th>
+                                    <th>Loan ID</th>
+                                    <th>Branch ID</th>
+                                    <th>Last paid date</th>
+                                    <th>No. of missing installments</th>
+                                    <th>Interest rate</th>
+                                    <th>Loan amount</th>
+                                    <th>Arrears amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var report in Model)
+                                {
+                                    foreach (var l in report.loan)
+                                    {
+                                        <tr>
+                                            <td>@l.Customer_id</td>
+                                            <td>@l.NIC</td>
+                                            <td>@l.Name</td>
+                                            <td>@l.Loan_id</td>
+                                            <td>@l.BranchId</td>
+                                            <td>@l.Last_unpaid_date</td>
+                                            <td>@l.No_of_missing_installments</td>
+                                            <td>@l.Interest</td>
+                                            <td>@l.Loan_amount</td>
+                                            <td>@l.Missing_amount</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+   $(document).ready(function () {
+        var branchIds = [];
+        @foreach (var report in Model)
+        {
+            foreach (var loan in report.loan)
+            {
+                <text>branchIds.push('@loan.BranchId');</text>
+            }          
+        }
+        branchIds = [...new Set(branchIds)];
+        branchIds.forEach(function(id) {
+            $('#branchSelector').append(`<option value="${id}">${id}</option>`);
+        });
+
+        $('#searchButton').click(function () {
+            filterData();         
+        });
+    }); 
+
+    $('#printTable').click(function () {
+        window.print();
+    });
+
+    function filterData() {
+        var branchId = $('#branchSelector').val();
+        var startDate = new Date($('#startDate').val());
+        var endDate = new Date($('#endDate').val());
+
+        if (isNaN(startDate) || isNaN(endDate)) {
+            alert('Please provide valid start and end dates.');
+            return;
+        }
+
+        $('#loanTable tbody tr').hide();
+
+        $('#loanTable tbody tr').each(function () {
+            var rowDate = new Date($(this).find('td:nth-child(6)').text());
+            var rowBranchId = $(this).find('td:nth-child(5)').text();
+
+            if (rowDate >= startDate && rowDate <= endDate) {
+                if (rowBranchId === branchId || branchId === 'all') {
+                    $(this).show();
+                }
+            }
+        });
+
+        $('#loanTable').show();
+    }
+
+    $('#loanTable tbody tr').each(function () {
+        var loanAmount = parseFloat($(this).find('td:nth-child(9)').text()).toFixed(2);
+        var missingAmount = parseFloat($(this).find('td:nth-child(10)').text()).toFixed(2);
+
+        // Update the displayed text with formatted numbers
+        $(this).find('td:nth-child(9)').text(loanAmount);
+        $(this).find('td:nth-child(10)').text(missingAmount);
+    });
+
+</script>
+
+<style>
+    .btn.active {
+        background-color: #007bff;
+        color: white;
+    }
+</style>
+
+

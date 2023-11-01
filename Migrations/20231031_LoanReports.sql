@@ -10,7 +10,7 @@ CREATE FUNCTION CalculateMissingAmount(
     interest FLOAT(2, 2),
     no_of_missing_installments INT
 ) 
-RETURNS DECIMAL(10, 2)  
+RETURNS DECIMAL(10, 2) DETERMINISTIC  
 BEGIN
     DECLARE missing DECIMAL(10, 2);
     SET missing = (((total_amount * interest)+ total_amount) / duration ) * no_of_missing_installments;

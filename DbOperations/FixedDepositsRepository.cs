@@ -8,6 +8,7 @@ public interface IFixedDepositsRepository
 {
     public Task<List<FdPlanViewModel>> GetFdPlansAsync();
     public Task AddFixedDepositAsync(AddFixedDepositViewModel addFixedDepositViewModel);
+    Task<List<FixedDepositViewModel>?> GetFixedDeposits();
 }
 
 public class FixedDepositsRepository : IFixedDepositsRepository
@@ -65,5 +66,34 @@ public class FixedDepositsRepository : IFixedDepositsRepository
             }
         }
         await conn.CloseAsync();
+    }
+
+    public async Task<List<FixedDepositViewModel>?> GetFixedDeposits()
+    {
+        var conn = _context.GetConnection();
+        await conn.OpenAsync();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"SELECT fd.*, p.*, 
+            DATE_ADD(opening_date, interval duration month) as maturity_date 
+            from fixed_deposit as fd JOIN fd_plan as p 
+                on fd.fd_plan_id = p.fd_plan_id;";
+        var reader = await cmd.ExecuteReaderAsync();
+        var fixedDeposits = new List<FixedDepositViewModel>();
+        while (await reader.ReadAsync())
+        {
+            var fixedDeposit = new FixedDepositViewModel
+            {
+                FdNo = reader.GetInt32("fd_no"),
+                SavingsAccountNumber = reader.GetString("savings_account_no"),
+                Amount = reader.GetDouble("amount"),
+                InterestRate = reader.GetDouble("interest"),
+                DurationInMonths = reader.GetInt32("duration"),
+                OpenDate = reader.GetDateTime("opening_date"),
+                MaturityDate = reader.GetDateTime("maturity_date")
+            };
+            fixedDeposits.Add(fixedDeposit);
+        }
+        await conn.CloseAsync();
+        return fixedDeposits;
     }
 }

@@ -58,4 +58,19 @@ public class FixedDepositsController : Controller
         }
         return Json(new {success=true});
     }
+
+    public IActionResult Index()
+    {
+        return View();
+    }
+
+    public async Task<IActionResult> ViewFixedDeposits()
+    {
+        var fixedDeposits = await _fixedDepositsRepository.GetFixedDeposits();
+        ViewFixedDepositsViewModel model = new()
+        {
+            FixedDeposits = fixedDeposits
+        };
+        return View(model);
+    }
 }

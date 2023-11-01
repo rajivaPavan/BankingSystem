@@ -31,7 +31,7 @@
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Search Organization</h3>
-                    </div>
+                        </div>
                     <!-- /.card-header -->
                     <!-- form start -->
                     <form id="search-organization"
@@ -49,22 +49,31 @@
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            @if (!Model.Found)
+                            @if (Model.Found != null)
                             {
-                                @* <a asp-action="AddNewOrganization" asp-controller="Organizations" *@
-                                // class="btn btn-success">Create New Organization</a>
+                                if (!(bool)Model.Found)
+                                {
+                                    <a asp-action="AddNewOrganization" asp-controller="Organizations"
+                                       class="btn btn-success">Create New Organization</a>
+                            
+                                }
                             }
                             <button type="submit" class="btn btn-outline-primary float-right">Submit</button>
                         </div>
                     </form>
                 </div>
             </div>
-            @if (Model.Found)
+            @if (Model.Found is not null && (bool)Model.Found)
             {
                 <div class="col-md-12">
                     <div class="card card-info">
                         <div class="card-header">
                             Organization Registration No: @Model.Result.RegNo
+                            @if (Model.Result is not null)
+                                                    {
+                                                        <a asp-action="ViewOrganization" asp-controller="Organizations" asp-route-customerId="@Model.Result.CustomerId"
+                                                           class="btn btn-light text-dark float-right">View Bank Accounts</a>
+                                                    }
                         </div>
                         <div class="card-body">
                             <div class="container-fluid">
@@ -90,7 +99,10 @@
                             <!-- Display individual owners if available -->
                             @if (Model.Result.Owners != null && Model.Result.Owners.Count > 0)
                             {
-                                <h4>Individual Owners:</h4>
+                                <h4>Individual Owners: <a class="btn btn-success my-2" 
+                                                          asp-controller="Organizations" 
+                                                          asp-action="AddNewOwner">Add New Owner</a>
+                                    </h4>
                                 <table class="table">
                                     <thead>
                                     <tr>
@@ -120,10 +132,6 @@
                                 </table>
                             }
                             <!-- End of individual owners section -->
-                        </div>
-                        <div class="card-footer">
-                            @* <a asp-action="ViewOrganization" asp-controller="Organizations" asp-route-customerId="@Model.Result.CustomerId" *@
-                            @* class="btn btn-success">View</a> *@
                         </div>
                     </div>
                 </div>

@@ -81,7 +81,7 @@ public class CustomersController : Controller
     public IActionResult ManageOrganizations()
     {
         OrganizationSearchViewModel model = new OrganizationSearchViewModel();
-        model.Found = false;
+        model.Found = null;
         model.Result = null;
         return View(model);
     }
@@ -91,7 +91,7 @@ public class CustomersController : Controller
     {
         
         // Implement the logic to search for organization customers and populate the model.
-        OrganizationViewModel res = await _organizationRepository.GetOrganization(model.RegNo);
+        var res = await _organizationRepository.GetOrganization(model.RegNo);
         
         if (res is not null) // Replace with your actual logic
         {
@@ -104,8 +104,7 @@ public class CustomersController : Controller
         else
         {
             model.Found = false;
-            // Add a validation error if the organization is not found.
-            ModelState.AddModelError("NotFound", "Organization with this registration number does not exist.");
+            TempData["regNo"] = model.RegNo;
         }
         
         return View(model);

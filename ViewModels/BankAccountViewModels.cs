@@ -6,8 +6,6 @@ using System.Numerics;
 using System;
 using System.Collections.Generic;
 using BankingSystem.ViewModels;
-
-
 namespace BankingSystem.ViewModels;
 
 public class AddBankAccountViewModel
@@ -56,13 +54,6 @@ public class BranchReportViewModel
 
 }
 
-public class LoanReportViewModel
-{
-    public List<Income> Incomes { get; set; }
-    public List<Outcome> Outcomes { get; set; }
-
-}
-
 public class Income
 {
     public string AccountNumber { get; set; }
@@ -81,11 +72,32 @@ public class Outcome
     public TransactionType TransactionType { get; set; }
 }
 
-public enum TransactionType
+public class LoanReportViewModel
 {
-    Income,
-    Outgo
+    public List<LoanInstallments> loan { get; set; }
+
 }
+
+public class LoanInstallments
+{
+    public string Name { get; set; }
+    public int Customer_id { get; set; }
+    public string NIC { get; set; }
+    public int Loan_id { get; set; }
+    public DateTime Last_unpaid_date { get; set; }
+    public int No_of_missing_installments { get; set; }
+    public double Interest { get; set; }
+    public double Loan_amount { get; set; }
+    public double Missing_amount { get; set; }
+    public int BranchId { get; set; }
+}
+   
+public enum TransactionType
+   {
+        Income,
+        Outgo
+    }
+
 
 
 

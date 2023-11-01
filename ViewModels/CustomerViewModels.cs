@@ -26,6 +26,8 @@ public class IndividualSearchViewModel
     
 }
 
+
+
 public class IndividualViewModel
 {
     public int IndividualId { get; set; }
@@ -54,4 +56,38 @@ public class IndividualBankAccountsViewModelForEmployee
     public bool CanMakeSavingsAcc { get; set; }
     public bool CanMakeCurrentAcc { get; set; }
     public int CustomerId { get; set; }
+}
+
+
+
+public class OrganizationIndividualViewModel
+{
+    public int CustomerId { get; set; }
+    public int IndividualId { get; set; }
+    public string OrganizationRegNo { get; set; }
+    public string Name { get; set; }
+    public string WorkEmail { get; set; }
+    public string NIC { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Position { get; set; }
+}
+
+public class OrganizationViewModel
+{
+    public int CustomerId { get; set; }
+    public string RegNo { get; set; }
+    public string Name { get; set; }
+    public string CompanyEmail { get; set; }
+    public string Type { get; set; }
+    public string? HomeNumber { get; set; }
+    public string Address { get; set; }
+    public List<OrganizationIndividualViewModel>? Owners { get; set; }
+}
+
+public class OrganizationSearchViewModel
+{
+    public string RegNo { get; set; }
+    public bool Found { get; set; }
+    public OrganizationViewModel Result { get; set; }
 }

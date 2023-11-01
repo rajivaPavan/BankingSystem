@@ -1,8 +1,134 @@
-﻿@model dynamic
+﻿@model OrganizationSearchViewModel
 
 @{
     ViewBag.Title = "Manage Organizations";
     Layout = "BankLayout";
 }
 
-<h2>title</h2>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Manage Bank Organizations</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item active">Manage Bank Organizations</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Organizations -->
+            <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Search Organization</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form id="search-organization"
+                          class="form" asp-controller="Customers"
+                          asp-action="ManageOrganizations" method="post">
+                        <div class="card-body">
+                            <div class="form-group row mb-0">
+                                <label asp-for="RegNo" class="col-sm-3 col-form-label">Registration Number</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control"
+                                           id="regNo" asp-for="RegNo" placeholder="Registration Number" required>
+                                </div>
+                                <span class="text-danger" asp-validation-for="RegNo"></span>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            @if (!Model.Found)
+                            {
+                                @* <a asp-action="AddNewOrganization" asp-controller="Organizations" *@
+                                // class="btn btn-success">Create New Organization</a>
+                            }
+                            <button type="submit" class="btn btn-outline-primary float-right">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @if (Model.Found)
+            {
+                <div class="col-md-12">
+                    <div class="card card-info">
+                        <div class="card-header">
+                            Organization Registration No: @Model.Result.RegNo
+                        </div>
+                        <div class="card-body">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="orgName">Name:</label>
+                                        <p id="orgName">@Model.Result.Name</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="orgAddress">Address:</label>
+                                        <p id="orgAddress">@Model.Result.Address</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="orgEmail">Company Email:</label>
+                                        <p id="orgEmail">@Model.Result.CompanyEmail</p>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="orgType">Type:</label>
+                                        <p id="orgType">@Model.Result.Type</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Display individual owners if available -->
+                            @if (Model.Result.Owners != null && Model.Result.Owners.Count > 0)
+                            {
+                                <h4>Individual Owners:</h4>
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th>NIC</th>
+                                        <th>Name</th>
+                                        <th>Work Email</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var owner in Model.Result.Owners)
+                                    {
+                                        <tr>
+                                            <td>@owner.NIC</td>
+                                            <td>@owner.Name</td>
+                                            <td>@owner.WorkEmail</td>
+                                            <td>
+                                                <button class="btn btn-info">Update</button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-danger">Remove</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            }
+                            <!-- End of individual owners section -->
+                        </div>
+                        <div class="card-footer">
+                            @* <a asp-action="ViewOrganization" asp-controller="Organizations" asp-route-customerId="@Model.Result.CustomerId" *@
+                            @* class="btn btn-success">View</a> *@
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+<!-- /.content -->

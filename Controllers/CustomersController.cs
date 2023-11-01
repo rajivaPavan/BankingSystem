@@ -12,11 +12,15 @@ public class CustomersController : Controller
 {
     private readonly AppDbContext _context;
     private readonly IIndividualRepository _individualRepository;
+    private readonly IOrganizationRepository _organizationRepository;
 
-    public CustomersController(AppDbContext context, IIndividualRepository individualRepository)
+    public CustomersController(AppDbContext context, 
+        IIndividualRepository individualRepository,
+        IOrganizationRepository organizationRepository)
     {
         _context = context;
         _individualRepository = individualRepository;
+        _organizationRepository = organizationRepository;
     }
     
     public IActionResult ManageIndividuals()
@@ -73,26 +77,37 @@ public class CustomersController : Controller
         return View("ManageIndividuals", model);
     }
 
+    [HttpGet]
     public IActionResult ManageOrganizations()
     {
-        return View();
+        OrganizationSearchViewModel model = new OrganizationSearchViewModel();
+        model.Found = false;
+        model.Result = null;
+        return View(model);
     }
     
     [HttpPost]
-    public async Task<IActionResult> SearchOrganization(string nic)
+    public async Task<IActionResult> ManageOrganizations(OrganizationSearchViewModel model)
     {
-        // validate if customer with nic exists
-        await _context.GetConnection().OpenAsync();
-        var individual = await _individualRepository.GetIndividualInfoForEmployee(nic);
-        await _context.GetConnection().CloseAsync();
         
+        // Implement the logic to search for organization customers and populate the model.
+        OrganizationViewModel res = await _organizationRepository.GetOrganization(model.RegNo);
         
-        if (individual != null)
+        if (res is not null) // Replace with your actual logic
         {
-            ModelState.AddModelError("nic", "Customer with this NIC already exists.");
-            return View("ManageIndividuals");
+            var individuals =
+                await _organizationRepository.GetOrganizationIndividuals(model.RegNo);
+            res.Owners = individuals;
+            model.Found = true;
+            model.Result = res;
         }
-                
-        return RedirectToAction("AddNewIndividual", "Individuals", new {nic});
+        else
+        {
+            model.Found = false;
+            // Add a validation error if the organization is not found.
+            ModelState.AddModelError("NotFound", "Organization with this registration number does not exist.");
+        }
+        
+        return View(model);
     }
 }

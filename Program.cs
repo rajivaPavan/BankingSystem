@@ -29,6 +29,7 @@ services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 services.AddScoped<IBankAccountService, BankAccountService>();
 services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 services.AddScoped<IFixedDepositsRepository, FixedDepositsRepository>();
+services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 
 services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 services.AddSession();

@@ -1,0 +1,17 @@
+﻿@model List<LoanProduct>
+
+<h1>Loan Products</h1>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Interest Rate</th>
+    </tr>
+    @foreach (var loanProduct in Model)
+    {
+        <tr>
+            <td>@loanProduct.Name</td>
+            <td>@loanProduct.InterestRate</td>
+        </tr>
+    }
+</table>

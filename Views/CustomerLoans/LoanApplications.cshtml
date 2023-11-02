@@ -1,0 +1,10 @@
+﻿<h2>Apply for an Online Loan</h2>
+@using (Html.BeginForm("ApplyLoan", "Customer", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.HiddenFor(model => model.CustomerId)
+        @Html.LabelFor(model => model.RequestedAmount)
+        @Html.TextBoxFor(model => model.RequestedAmount, new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">Apply</button>
+}

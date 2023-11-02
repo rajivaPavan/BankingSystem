@@ -21,7 +21,6 @@ public class TransactionController : Controller
     public IActionResult Index()
     {
         TransferViewModel model = new();
-        model.Found = false;
         return View(model);
     }
 
@@ -62,7 +61,7 @@ public class TransactionController : Controller
         try
         {
             await conn.OpenAsync();
-            await _customerRepository.Addtransfer(model);
+            await _individualRepository.Addtransfer(model);
         }
         finally
         {

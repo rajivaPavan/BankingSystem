@@ -30,7 +30,7 @@ public class ReportsController : Controller
                 BranchId = income.BranchId,
                 OpeningDate = income.OpeningDate,
                 Amount = income.Amount,
-                TransactionType = TransactionType.Income
+                ReportTransactionType = ReportTransactionType.Income
             }).ToList(),
             Outcomes = report.Outcomes.Select(outcome => new Outcome
             {
@@ -38,7 +38,7 @@ public class ReportsController : Controller
                 BranchId = outcome.BranchId,
                 OpeningDate = outcome.OpeningDate,
                 Amount = outcome.Amount,
-                TransactionType = TransactionType.Outgo
+                ReportTransactionType = ReportTransactionType.Outgo
             }).ToList()
         }).ToList();
 

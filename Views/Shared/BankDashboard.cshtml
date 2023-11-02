@@ -1,4 +1,5 @@
-﻿@model dynamic
+﻿@using BankingSystem.Models
+@model dynamic
 
 @{
     ViewBag.Title = "Bank Operations";
@@ -44,7 +45,7 @@
                 <a asp-controller="Customers" asp-action="ManageOrganizations">
                     <div class="info-box">
                         <span class="info-box-icon bg-info">
-                            <i class="fas fa-user"></i>
+                            <i class="fas fa-user-friends"></i>
                         </span>
                         <div class="info-box-content">
                             <span class="info-box-text text-decoration-none">Manage Organizations</span>
@@ -65,6 +66,36 @@
                     </div>
                 </a>
             </div>
+            
+            <div class="col-lg-6">
+                <a asp-controller="Reports" asp-action="BranchReport">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="far fa-file-alt"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">Branch Transaction Report</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            @if (User.IsInRole(UserType.Manager.ToString()))
+            {
+                <div class="col-lg-6">
+                    <a asp-controller="Reports" asp-action="LoanReport">
+                        <div class="info-box">
+                            <span class="info-box-icon bg-info">
+                                <i class="far fa-file-alt"></i>
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text text-decoration-none">Late Loan Installment Report</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            
         </div>
         <!-- /.row -->
     </div><!-- /.container-fluid -->

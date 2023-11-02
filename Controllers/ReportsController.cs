@@ -1,9 +1,12 @@
-﻿using BankingSystem.Services;
+﻿using BankingSystem.Constants;
+using BankingSystem.Services;
 using BankingSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingSystem.Controllers;
 
+[Authorize(Policies.EmployeePolicy)]
 public class ReportsController : Controller
 {
     private readonly IReportsService _reportsService;
@@ -13,6 +16,7 @@ public class ReportsController : Controller
         _reportsService = reportsService;
     }
     
+    [Authorize(Policies.EmployeePolicy)]
     [HttpGet]
     public async Task<IActionResult> BranchReport()
     {
@@ -41,6 +45,7 @@ public class ReportsController : Controller
         return View("BranchReports", branchReportViewModelList);
     }
     
+    [Authorize(Policies.ManagerPolicy)]
     [HttpGet]
     public async Task<IActionResult> LoanReport()
     {

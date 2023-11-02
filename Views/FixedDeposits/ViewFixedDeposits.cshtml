@@ -1,8 +1,9 @@
-﻿@model ViewFixedDepositsViewModel
+﻿@using BankingSystem.Models
+@model ViewFixedDepositsViewModel
 
 @{
     ViewBag.Title = "View Fixed Deposits";
-    Layout = "BankLayout";
+    Layout = User.IsInRole(UserType.Customer.ToString()) ? "CustomerLayout" : "BankLayout";
 }
 
 
@@ -20,35 +21,39 @@
 
 <div class="content">
     <div class="container-fluid">
-        @if (Model.FixedDeposits is not null)
+        @if (Model.FixedDeposits is not null && Model.FixedDeposits.Count > 0)
         {
-            <table class="table table-bordered">
-                <thead>
-                <tr>
-                    <th>FD No</th>
-                    <th>Savings Account Number</th>
-                    <th>Amount</th>
-                    <th>Interest Rate</th>
-                    <th>Duration (Months)</th>
-                    <th>Open Date</th>
-                    <th>Maturity Date</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var fd in Model.FixedDeposits)
-                {
-                    <tr>
-                        <td>@fd.FdNo</td>
-                        <td>@fd.SavingsAccountNumber</td>
-                        <td>@fd.Amount</td>
-                        <td>@fd.InterestRate</td>
-                        <td>@fd.DurationInMonths</td>
-                        <td>@fd.OpenDate.ToShortDateString()</td>
-                        <td>@fd.MaturityDate.ToShortDateString()</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
+            <div class="card card-primary border-top border-width-3 border-primary ">
+                <div class="card-body">
+                    <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>FD No</th>
+                                                        <th>Savings Account Number</th>
+                                                        <th>Amount</th>
+                                                        <th>Interest Rate</th>
+                                                        <th>Duration (Months)</th>
+                                                        <th>Open Date</th>
+                                                        <th>Maturity Date</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @foreach (var fd in Model.FixedDeposits)
+                                                    {
+                                                        <tr>
+                                                            <td>@fd.FdNo</td>
+                                                            <td>@fd.SavingsAccountNumber</td>
+                                                            <td>@fd.Amount</td>
+                                                            <td>@fd.InterestRate</td>
+                                                            <td>@fd.DurationInMonths</td>
+                                                            <td>@fd.OpenDate.ToShortDateString()</td>
+                                                            <td>@fd.MaturityDate.ToShortDateString()</td>
+                                                        </tr>
+                                                    }
+                                                    </tbody>
+                                                </table>
+                </div>
+            </div>
         }
         else
         {

@@ -1,5 +1,8 @@
-﻿using BankingSystem.DbOperations;
+﻿using BankingSystem.Constants;
+using BankingSystem.DbOperations;
+using BankingSystem.Models;
 using BankingSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using MySqlConnector;
@@ -15,6 +18,7 @@ public class FixedDepositsController : Controller
         _fixedDepositsRepository = fixedDepositsRepository;
     }
     
+    [Authorize(Policies.EmployeePolicy)]
     [HttpGet]
     public async Task<IActionResult> AddFixedDeposit()
     {
@@ -25,7 +29,8 @@ public class FixedDepositsController : Controller
         };
         return View(addFixedDepositViewModel);
     }
-    
+
+    [Authorize(Policies.EmployeePolicy)]
     [HttpPost]
     public async Task<IActionResult> AddFixedDeposit(AddFixedDepositViewModel addFixedDepositViewModel)
     {
@@ -59,18 +64,29 @@ public class FixedDepositsController : Controller
         return Json(new {success=true});
     }
 
+    [Authorize(Policies.EmployeePolicy)]
     public IActionResult Index()
     {
         return View();
     }
 
+    [Authorize]
     public async Task<IActionResult> ViewFixedDeposits()
     {
-        var fixedDeposits = await _fixedDepositsRepository.GetFixedDeposits();
+        List<FixedDepositViewModel>? fixedDeposits = new();
+        if(User.IsInRole(UserType.Employee.ToString()) || User.IsInRole(UserType.Manager.ToString()))
+            fixedDeposits = await _fixedDepositsRepository.GetFixedDeposits();
+        else if (User.IsInRole(UserType.Customer.ToString()))
+        {
+            var customerId = int.Parse(HttpContext.User.FindFirst("CustomerId")!.Value);
+            fixedDeposits = await _fixedDepositsRepository.GetFixedDeposits(customerId);
+        }
+            
         ViewFixedDepositsViewModel model = new()
         {
             FixedDeposits = fixedDeposits
         };
         return View(model);
     }
+    
 }

@@ -70,6 +70,11 @@ public class CustomersController : Controller
             TempData["checkForChild"] = model.CheckForChild;
             return View("ManageIndividuals", model);
         }
+        if (individuals.Count>0 && model.CheckForChild)
+        {
+            TempData["nic"] = model.Nic;
+            TempData["checkForChild"] = model.CheckForChild;
+        }
         
         model.Found = true;
         model.Result = individuals;

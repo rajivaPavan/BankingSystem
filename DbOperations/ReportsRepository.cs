@@ -36,7 +36,7 @@ public class ReportsRepository : IReportsRepository
                         BranchId = reader.GetInt32("branch_id"),
                         OpeningDate = reader.GetDateTime("opening_date"),
                         Amount = reader.GetDouble("amount"),
-                        TransactionType = TransactionType.Income
+                        ReportTransactionType = ReportTransactionType.Income
                     };
 
                     // Create a new report for each income
@@ -64,7 +64,7 @@ public class ReportsRepository : IReportsRepository
                         BranchId = outgoReader.GetInt32("branch_id"),
                         OpeningDate = outgoReader.GetDateTime("time_stamp"),
                         Amount = outgoReader.GetDouble("amount"),
-                        TransactionType = TransactionType.Outgo
+                        ReportTransactionType = ReportTransactionType.Outgo
                     };
 
                     // Find the relevant report in the list to add the outcome

@@ -31,6 +31,7 @@ public class OrganizationRepository : IOrganizationRepository
         using var reader = await cmd.ExecuteReaderAsync();
         if (!reader.HasRows)
         {
+            await conn.CloseAsync();
             return null;
         }
 
@@ -57,6 +58,7 @@ public class OrganizationRepository : IOrganizationRepository
         using var reader = await cmd.ExecuteReaderAsync();
         if (!reader.HasRows)
         {
+            await conn.CloseAsync();
             return null;
         }
         
@@ -86,13 +88,14 @@ public class OrganizationRepository : IOrganizationRepository
             await conn.OpenAsync();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = @"CALL create_organization_with_individual(
-                @regNo, @name, @address, @companyEmail, @type, 
+                @regNo, @name, @address, @companyEmail, @type, @nic,
                 @position, @work_email, @work_phone, @first_name, @last_name, @date_of_birth, @gender);";
             cmd.Parameters.AddWithValue("@regNo", model.RegNo);
             cmd.Parameters.AddWithValue("@name", model.Name);
             cmd.Parameters.AddWithValue("@address", model.Address);
             cmd.Parameters.AddWithValue("@companyEmail", model.CompanyEmail);
             cmd.Parameters.AddWithValue("@type", model.Type);
+            cmd.Parameters.AddWithValue("@nic", model.Owner.NIC);
             cmd.Parameters.AddWithValue("@position", model.Owner.Position);
             cmd.Parameters.AddWithValue("@work_email", model.Owner.WorkEmail);
             cmd.Parameters.AddWithValue("@work_phone", model.Owner.WorkPhone);
@@ -100,6 +103,8 @@ public class OrganizationRepository : IOrganizationRepository
             cmd.Parameters.AddWithValue("@last_name", model.Owner.LastName);
             cmd.Parameters.AddWithValue("@date_of_birth", model.Owner.DateOfBirth);
             cmd.Parameters.AddWithValue("@gender", false);
+
+            await cmd.ExecuteNonQueryAsync();
         }
         catch (MySqlException e)
         {

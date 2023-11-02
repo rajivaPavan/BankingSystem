@@ -98,7 +98,7 @@ public class CustomersController : Controller
         // Implement the logic to search for organization customers and populate the model.
         var res = await _organizationRepository.GetOrganization(model.RegNo);
         
-        if (res is not null) // Replace with your actual logic
+        if (res is not null)
         {
             var individuals =
                 await _organizationRepository.GetOrganizationIndividuals(model.RegNo);

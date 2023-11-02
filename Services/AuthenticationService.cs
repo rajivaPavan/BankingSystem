@@ -57,7 +57,9 @@ public class AuthenticationService : IAuthenticationService
         }
         else if(user.UserType is UserType.Customer)
         {
-
+            var id = await _userRepository.GetCustomerIdByUserId(user.UserId);
+            if (id != -1)
+                customerId = id.ToString();
         }
         
         await _dbContext.GetConnection().CloseAsync();
@@ -75,7 +77,7 @@ public class AuthenticationService : IAuthenticationService
         }
         if (customerId != null)
         {
-            claims.Add(new Claim("Customer", customerId));
+            claims.Add(new Claim("CustomerId", customerId));
         }
         
         var claimsIdentity = new ClaimsIdentity(

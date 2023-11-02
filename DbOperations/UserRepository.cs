@@ -9,6 +9,7 @@ public interface IUserRepository : IRepository<User>
     Task<User?> AuthenticateUser(string username, string password);
     Task SignInAsync(User user);
     Task<bool> IsInRole(string username, int userType);
+    Task<int> GetCustomerIdByUserId(int userUserId);
 }
 
 public class UserRepository : Repository, IUserRepository
@@ -95,5 +96,17 @@ public class UserRepository : Repository, IUserRepository
         cmd.Parameters.AddWithValue("u", username);
         cmd.Parameters.AddWithValue("t", userType);
         return (bool) (await cmd.ExecuteScalarAsync() ?? false);
+    }
+
+    public async Task<int> GetCustomerIdByUserId(int userUserId)
+    {
+        var connection = _dbContext.GetConnection();
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = @"SELECT customer_id FROM individual WHERE user_id = @u;";
+        cmd.Parameters.AddWithValue("u", userUserId);
+        var reader = await cmd.ExecuteReaderAsync();
+        if (await reader.ReadAsync() == false)
+            return -1;
+        return reader.GetInt32(reader.GetOrdinal("customer_id"));
     }
 }

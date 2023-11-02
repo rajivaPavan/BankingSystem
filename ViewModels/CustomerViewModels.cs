@@ -47,8 +47,8 @@ public class IndividualViewModel
 
 public class TransferViewModel
 {
-    public int SenderAccountId { get; set; }
-    public int RecipientAccountId { get; set; }
+    public string SenderAccountId { get; set; }
+    public string RecipientAccountId { get; set; }
     public double Amount { get; set; }
     public string Reference { get; set; }
 
@@ -57,6 +57,6 @@ public class TransferViewModel
 
 public class AccountViewModel
 {
-    public string Accounts_id { get; set; }
+    public string AccountNumber { get; set; }
 
 }

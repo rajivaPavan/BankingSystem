@@ -9,7 +9,6 @@ public interface IBankAccountService
 {
     public Task AddSavingsAccount(AddBankAccountViewModel model);
     public Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlans();
-    public Task<IEnumerable<BranchReportViewModel>> GetBranchReports();   
 
 }
 
@@ -84,23 +83,4 @@ public class BankAccountService : IBankAccountService
         return accountNumber.ToString();
 
     }
-
-    public async Task<IEnumerable<BranchReportViewModel>> GetBranchReports()
-    {
-        var conn = _context.GetConnection();
-        IEnumerable<BranchReportViewModel> branchReports;
-        try
-        {
-            await conn.OpenAsync();
-            branchReports = await _bankAccountRepository.GetBranchReports();
-
-        }
-        finally
-        {
-            await conn.CloseAsync();
-        }
-
-        return branchReports;
-    }
-
 }

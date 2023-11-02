@@ -8,7 +8,6 @@ public interface IBankAccountRepository
     Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlans();
     Task AddSavingsAccount(AddBankAccountViewModel model, string accNo, int branchId);
     Task<bool> HasAccountInBranch(int customerId, int branchId, BankAccountType type);
-    Task<IEnumerable<BranchReportViewModel>> GetBranchReports();        
 }
 
 public class BankAccountRepository : IBankAccountRepository
@@ -42,79 +41,6 @@ public class BankAccountRepository : IBankAccountRepository
         }
 
         return savingsPlans;
-    }
-
-    public async Task<IEnumerable<BranchReportViewModel>> GetBranchReports()
-    {
-        var conn = _context.GetConnection();
-        var reports = new List<BranchReportViewModel>();
-
-        using (var cmdIncome = conn.CreateCommand())
-        {
-            cmdIncome.CommandText = "SELECT * FROM income_report_view_for_employees";
-            using (var reader = await cmdIncome.ExecuteReaderAsync())
-            {
-                while (reader.Read())
-                {
-                    var income = new Income
-                    {
-                        AccountNumber = reader.GetString("account_number"),
-                        BranchId = reader.GetInt32("branch_id"),
-                        OpeningDate = reader.GetDateTime("opening_date"),
-                        Amount = reader.GetDouble("amount"),
-                        TransactionType = TransactionType.Income
-                    };
-
-                    // Create a new report for each income
-                    var report = new BranchReportViewModel
-                    {
-                        Incomes = new List<Income> { income }, // Add the income to the Incomes list
-                        Outcomes = new List<Outcome>()         // Initialize the Outcomes list
-                    };
-
-                    reports.Add(report);
-                }
-            }
-        }
-
-        using (var cmdOutgo = conn.CreateCommand())
-        {
-            cmdOutgo.CommandText = "SELECT * FROM outgo_report_view_for_employees";
-            using (var outgoReader = await cmdOutgo.ExecuteReaderAsync())
-            {
-                while (outgoReader.Read())
-                {
-                    var outcome = new Outcome
-                    {
-                        AccountNumber = outgoReader.GetString("account_no"),
-                        BranchId = outgoReader.GetInt32("branch_id"),
-                        OpeningDate = outgoReader.GetDateTime("time_stamp"),
-                        Amount = outgoReader.GetDouble("amount"),
-                        TransactionType = TransactionType.Outgo
-                    };
-
-                    // Find the relevant report in the list to add the outcome
-                    var report = reports.Find(r => r.Incomes.Any(i => i.AccountNumber == outcome.AccountNumber));
-
-                    if (report != null)
-                    {
-                        report.Outcomes.Add(outcome); // Add the outcome to the respective report
-                    }
-                    else
-                    {
-                        // If no report exists for the outcome's account number, create a new one
-                        var newReport = new BranchReportViewModel
-                        {
-                            Incomes = new List<Income>(), // Initialize the Incomes list
-                            Outcomes = new List<Outcome> { outcome } // Add the outcome to the Outcomes list
-                        };
-                        reports.Add(newReport); // Add the new report to the list
-                    }
-                }
-            }
-        }
-
-        return reports;
     }
 
 

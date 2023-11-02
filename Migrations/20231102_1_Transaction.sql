@@ -36,7 +36,8 @@ BEGIN
     SELECT savings_plan_id INTO plan_id FROM savings_account WHERE account_no = pAccountNo;
 
     -- Validate the transaction amount against the minimum balance requirement for the savings account plan
-    IF pTransactionType = 1 AND pAmount > (SELECT minimum
+    IF pTransactionType = 1 AND 
+       (SELECT balance from bank_account where account_no = pAccountNo) - pAmount < (SELECT minimum
                                            FROM savings_plan
                                            WHERE savings_plan_id = plan_id) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Withdrawal amount exceeds minimum balance requirement';

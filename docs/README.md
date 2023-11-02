@@ -119,6 +119,9 @@ Explain the structure and organization of the database schema, including its com
 ### `calculate_savings_interest`
 - Calculates and records interest for active savings accounts.
 
+### `calculate_fd_interests`
+- Calculates and records interest for active fixed deposit accounts.
+
 ### `check_individual_exists`
 - Checks if an individual with a specific NIC exists.
 
@@ -174,5 +177,9 @@ Explain the structure and organization of the database schema, including its com
 
 This event automates the process of calculating savings account interest on a daily basis, ensuring timely and accurate interest calculations for active accounts.
 
+### `calculate_fd_interest_event`
+- **Purpose:** This event is scheduled to run every day to calculate and record interest for active fixed deposit accounts. It calls the `calculate_fd_interests()` stored procedure, which performs interest calculations and inserts them into the transactions table.
+- **Schedule:** The event is scheduled to run every day (`every 1 DAY`) and starts one day from the current date (`starts CURDATE() + INTERVAL 1 DAY`).
+- **Enabled:** The event is enabled, meaning it will execute according to the defined schedule.
 ---
 

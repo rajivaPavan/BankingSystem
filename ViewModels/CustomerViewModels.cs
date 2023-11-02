@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using BankingSystem.DbOperations;
 using BankingSystem.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BankingSystem.ViewModels;
 
@@ -126,4 +127,20 @@ public class OrganizationSearchViewModel
 public class CreateOrganizationViewModel : OrganizationViewModel
 {
     public OrganizationIndividualViewModel Owner { get; set; }
+}
+
+public class TransferViewModel
+{
+    public string SenderAccountId { get; set; }
+    public string RecipientAccountId { get; set; }
+    public double Amount { get; set; }
+    public string Reference { get; set; }
+
+    public SelectList SenderAccounts { get; set; }
+}
+
+public class AccountViewModel
+{
+    public string AccountNumber { get; set; }
+
 }

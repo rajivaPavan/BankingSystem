@@ -18,11 +18,16 @@ public class BankAccountController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> AddNewBankAccount(int customerId, string nic)
+    public async Task<IActionResult> AddSavingsAccount(int customerId)
     {
-        var savingsPlans
-            = await _bankAccountService.GetSavingsPlans();
-
+        var nic = TempData["nic"] as string;
+        
+        if(customerId == -1)
+            return RedirectToAction("ManageIndividuals", "Customers");
+        
+        var savingsPlans 
+            = await _bankAccountService.GetSavingsPlansForCustomer(customerId);
+        
         var model = new AddBankAccountViewModel()
         {
             CustomerId = customerId,
@@ -43,19 +48,21 @@ public class BankAccountController : Controller
         catch (MySqlException e)
         {
             ModelState.AddModelError("", "Something went wrong. Please try again later.");
+            return View(model);
         }
         catch (Exception e)
         {
             ModelState.AddModelError("", e.Message);
+            return View(model);
         }
 
-        return RedirectToAction("Index", "Customers");
+        return RedirectToAction("ManageIndividuals", "Customers");
     }
 
     [HttpPost]
     public IActionResult AddCurrentAccount(AddBankAccountViewModel model)
     {
-        return View("AddNewBankAccount", model);
+        return View(model);
     }
 
 }

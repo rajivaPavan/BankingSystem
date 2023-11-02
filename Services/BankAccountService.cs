@@ -8,7 +8,7 @@ namespace BankingSystem.Services;
 public interface IBankAccountService
 {
     public Task AddSavingsAccount(AddBankAccountViewModel model);
-    public Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlans();
+    public Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlansForCustomer(int customerId);
 
 }
 
@@ -49,14 +49,14 @@ public class BankAccountService : IBankAccountService
         }
     }
 
-    public async Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlans()
+    public async Task<IEnumerable<SavingsPlanViewModel>> GetSavingsPlansForCustomer(int customerId)
     {
         var conn = _context.GetConnection();
         IEnumerable<SavingsPlanViewModel> savingsPlans;
         try
         {
             await conn.OpenAsync();
-            savingsPlans = await _bankAccountRepository.GetSavingsPlans();
+            savingsPlans = await _bankAccountRepository.GetSavingsPlansForCustomer(customerId);
         }
         finally
         {

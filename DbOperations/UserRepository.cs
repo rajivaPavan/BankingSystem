@@ -1,4 +1,5 @@
-﻿using BankingSystem.DBContext;
+﻿using System.Data;
+using BankingSystem.DBContext;
 using BankingSystem.Models;
 using MySqlConnector;
 
@@ -6,7 +7,7 @@ namespace BankingSystem.DbOperations;
 
 public interface IUserRepository : IRepository<User>
 {
-    Task<User?> AuthenticateUser(string username, string password);
+    Task<User?> AuthenticateUser(string username, string passwordHash);
     Task SignInAsync(User user);
     Task<bool> IsInRole(string username, int userType);
     Task<int> GetCustomerIdByUserId(int userUserId);
@@ -64,16 +65,32 @@ public class UserRepository : Repository, IUserRepository
         return user;
     }
 
-    public async Task<User?> AuthenticateUser(string username, string password)
+    public async Task<User?> AuthenticateUser(string username, string passwordHash)
     {
         var connection = _dbContext.GetConnection();
-        using var cmd = connection.CreateCommand();
-        cmd.CommandText = @"SELECT * FROM user 
-                        WHERE user_name = @u AND password_hash = SHA2(@p,256);";
-        cmd.Parameters.AddWithValue("u", username);
-        cmd.Parameters.AddWithValue("p", password);
-        using var reader = await cmd.ExecuteReaderAsync();
-        return await ReadUserAsync(reader);
+        MySqlCommand cmd = new MySqlCommand("authenticate_user", connection);
+        cmd.CommandType = CommandType.StoredProcedure;
+        cmd.Parameters.AddWithValue("@p_user_name", username);
+        cmd.Parameters.AddWithValue("@p_password_hash", passwordHash);
+        // return parameters
+        cmd.Parameters.Add(new MySqlParameter("@o_user_type", MySqlDbType.Int32));
+        cmd.Parameters["@o_user_type"].Direction = ParameterDirection.Output;
+        cmd.Parameters.Add(new MySqlParameter("@o_user_id", MySqlDbType.Int32));
+        cmd.Parameters["@o_user_id"].Direction = ParameterDirection.Output;
+        
+        await cmd.ExecuteNonQueryAsync();
+        
+        var userId = Convert.ToInt32(cmd.Parameters["@o_user_id"].Value);
+        var userType = Convert.ToInt32(cmd.Parameters["@o_user_type"].Value);
+        if (userId == -1)
+            return null;
+
+        return new User()
+        {
+            UserId = userId,
+            UserName = username,
+            UserType = (UserType) userType
+        };
     }
 
     public async Task SignInAsync(User user)

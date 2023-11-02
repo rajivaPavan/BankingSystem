@@ -1,0 +1,64 @@
+﻿@using BankingSystem.Models
+@model ViewFixedDepositsViewModel
+
+@{
+    ViewBag.Title = "View Fixed Deposits";
+    Layout = User.IsInRole(UserType.Customer.ToString()) ? "CustomerLayout" : "BankLayout";
+}
+
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">@ViewBag.Title</h1>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+
+<div class="content">
+    <div class="container-fluid">
+        @if (Model.FixedDeposits is not null && Model.FixedDeposits.Count > 0)
+        {
+            <div class="card card-primary border-top border-width-3 border-primary ">
+                <div class="card-body">
+                    <table class="table table-bordered">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>FD No</th>
+                                                        <th>Savings Account Number</th>
+                                                        <th>Amount</th>
+                                                        <th>Interest Rate</th>
+                                                        <th>Duration (Months)</th>
+                                                        <th>Open Date</th>
+                                                        <th>Maturity Date</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @foreach (var fd in Model.FixedDeposits)
+                                                    {
+                                                        <tr>
+                                                            <td>@fd.FdNo</td>
+                                                            <td>@fd.SavingsAccountNumber</td>
+                                                            <td>@fd.Amount</td>
+                                                            <td>@fd.InterestRate</td>
+                                                            <td>@fd.DurationInMonths</td>
+                                                            <td>@fd.OpenDate.ToShortDateString()</td>
+                                                            <td>@fd.MaturityDate.ToShortDateString()</td>
+                                                        </tr>
+                                                    }
+                                                    </tbody>
+                                                </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-warning fs-3">No Fixed Deposits</p>
+        }
+    </div>
+</div>
+

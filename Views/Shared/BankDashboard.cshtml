@@ -1,4 +1,5 @@
-﻿@model dynamic
+﻿@using BankingSystem.Models
+@model dynamic
 
 @{
     ViewBag.Title = "Bank Operations";
@@ -17,7 +18,7 @@
                     <li class="breadcrumb-item">
                         <a href="#">Home</a>
                     </li>
-                    <li class="breadcrumb-item active">Starter Page</li>
+                    <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
             </div><!-- /.col -->
         </div><!-- /.row -->
@@ -29,17 +30,72 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-6">
-                <a asp-controller="Customers" asp-action="Index">
+                <a asp-controller="Customers" asp-action="ManageIndividuals">
                     <div class="info-box">
                         <span class="info-box-icon bg-info">
                             <i class="fas fa-user"></i>
                         </span>
                         <div class="info-box-content">
-                            <span class="info-box-text text-decoration-none">Manage Customers</span>
+                            <span class="info-box-text text-decoration-none">Manage Individuals</span>
                         </div>
                     </div>
                 </a>
             </div>
+            <div class="col-lg-6">
+                <a asp-controller="Customers" asp-action="ManageOrganizations">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="fas fa-user-friends"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">Manage Organizations</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-6">
+                <a asp-controller="FixedDeposits" asp-action="Index">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="fas fa-money-check"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">Fixed Deposits</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-lg-6">
+                <a asp-controller="Reports" asp-action="BranchReport">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="far fa-file-alt"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">Branch Transaction Report</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            @if (User.IsInRole(UserType.Manager.ToString()))
+            {
+                <div class="col-lg-6">
+                    <a asp-controller="Reports" asp-action="LoanReport">
+                        <div class="info-box">
+                            <span class="info-box-icon bg-info">
+                                <i class="far fa-file-alt"></i>
+                            </span>
+                            <div class="info-box-content">
+                                <span class="info-box-text text-decoration-none">Late Loan Installment Report</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            
         </div>
         <!-- /.row -->
     </div><!-- /.container-fluid -->

@@ -16,7 +16,7 @@ select
     from organization as o
 join organization_individual as oi
     on oi.organization_reg_no = o.reg_no
-join individual_view_for_employee as i
+join minimal_individual_view as i
     on i.individual_id = oi.individual_id;
 
  -- check organization exists
@@ -36,6 +36,6 @@ create
     deterministic
 BEGIN
     DECLARE count INT;
-    SELECT COUNT(*) INTO count FROM individual_view_for_employee WHERE NIC = p_nic;
+    SELECT COUNT(*) INTO count FROM minimal_individual_view WHERE NIC = p_nic;
     RETURN count;
 END;

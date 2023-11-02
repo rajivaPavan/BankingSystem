@@ -1,0 +1,80 @@
+﻿@using BankingSystem.DbOperations
+@model IndividualBankAccountsViewModelForEmployee
+
+@{
+    ViewBag.Title = "View Individual";
+    Layout = "BankLayout";
+}
+
+<div class="content">
+    <div class="container-fluid py-3">
+        @if (Model.CanMakeSavingsAcc)
+        {
+            <div class="row my-2">
+                <div class="col-6">
+                    <a asp-action="AddSavingsAccount" asp-controller="BankAccount"
+                       asp-route-customerId="@Model.CustomerId"
+                       class="btn btn-primary">
+                        Create Savings Account In Branch
+                    </a>
+                </div>
+            </div>
+        }
+        @if (Model.CanMakeCurrentAcc)
+        {
+            <div class="row my-2">
+                <div class="col-6">
+                    <a class="btn btn-info">Create Current Account In Branch</a>
+                </div>
+            </div>
+        }
+    </div>
+    @if (Model.BankAccounts.Count > 0)
+    {
+        var accounts = Model.BankAccounts;
+        var firstPerson = accounts.First();
+        <div class="card card-primary">
+            <div class="card-body">
+                <h5 class="card-title">@($"{firstPerson.FirstName} {firstPerson.LastName}")</h5>
+                <p class="card-text">Date of Birth: @firstPerson.DateOfBirth.ToShortDateString()</p>
+                <p class="card-text">Mobile Number: @firstPerson.MobileNumber</p>
+                <h6 class="card-subtitle mb-2 text-muted">Branches and Bank Accounts:</h6>
+
+                <table id="accounts-table" class="table table-bordered">
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Account Type</th>
+                        <th>Account Balance</th>
+                    </tr>
+                    @foreach (var branch in Model.BankAccounts
+                        .Select(b => new {b.BranchId, b.BranchName}).Distinct())
+                    {
+                        <tr>
+                            <td colspan="3" class="bg-info text-white">@branch.BranchName</td>
+                        </tr>
+                        @foreach (var account in accounts.Where(a => a.BranchId == branch.BranchId))
+                        {
+                            <tr>
+                                <td>
+                                    @account.BankAccountNumber
+                                </td>
+                                <td>
+                                    @(account.BankAccountType == BankAccountType.Savings ? "Savings" : "Checking")
+                                </td>
+                                <td>
+                                    @account.BankAccountBalance
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>No data available.</p>
+    }
+</div>
+

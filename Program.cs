@@ -21,12 +21,15 @@ services.AddSingleton<AppDbContext>(_ =>
     new AppDbContext(connectionString));
 
 services.AddScoped<IUserRepository, UserRepository>();
+services.AddScoped<IPasswordService, PasswordService>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
 services.AddScoped<IIndividualRepository, IndividualRepository>();
 services.AddScoped<IUserService, UserService>();
 services.AddScoped<IBankAccountRepository, BankAccountRepository>();
 services.AddScoped<IBankAccountService, BankAccountService>();
 services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+services.AddScoped<IFixedDepositsRepository, FixedDepositsRepository>();
+services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 services.AddScoped<IReportsRepository, ReportsRepository>();
 services.AddScoped<IReportsService, ReportsService>();
 services.AddScoped<ITransferRepository, TransferRepository>();

@@ -1,7 +1,7 @@
-﻿@model CustomerSelfRegistrationViewModel
+﻿@model EmployeeSelfRegistrationViewModel
 
 @{
-    ViewBag.Title = "Customer Self Register";
+    ViewBag.Title = "Employee Self Register";
     Layout = "Layout";
 }
 
@@ -15,7 +15,7 @@
                 <p class="login-box-msg">Self Registration Form</p>
                 <p class="card-text">For security purposes, your NIC and mobile number are required.</p>
     
-                <form asp-action="CustomerSelfRegister" method="post">
+                <form asp-action="EmployeeSelfRegister" method="post">
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" asp-for="NIC" 
                                placeholder="NIC (National Identity Card)" required>
@@ -27,8 +27,8 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <input class="form-control" asp-for="BankAccountNumber" 
-                               placeholder="Bank Account Number" required>
+                        <input class="form-control" asp-for="EmployeeId" 
+                               placeholder="Employee Id" required>
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-id-card"></span>
@@ -45,7 +45,7 @@
                             </div>
                         </div>
                     </div>
-
+                    
                     <div class="form-group">
                         <div class="">
                             @Html.ValidationSummary(false, "", new {@class = "text-danger"})

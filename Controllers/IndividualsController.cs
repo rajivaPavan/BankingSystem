@@ -21,17 +21,21 @@ public class IndividualsController : Controller
     }
     
     [HttpGet]
-    public IActionResult AddNewIndividual(string? nic)
+    public IActionResult AddNewIndividual()
     {
+        var nic = TempData["nic"] as string;
+        bool checkForChild = TempData["checkForChild"] as bool? ?? false;
+        
         if (nic == null)
         {
-            return RedirectToAction("Index", "Customers");
+            return RedirectToAction("ManageIndividuals", "Customers");
         }
         var model = new IndividualViewModel()
         {
             NIC = nic
         };
-        return View("AddNewIndividual", model);
+        TempData["nic"] = nic;
+        return View(model);
     }
     
     [HttpPost]
@@ -39,6 +43,9 @@ public class IndividualsController : Controller
     {
         var conn = _context.GetConnection();
         int customerId = -1;
+        if(model.NIC == null)
+            model.NIC = TempData["nic"] as string;
+
         try
         {
             await conn.OpenAsync();
@@ -50,10 +57,44 @@ public class IndividualsController : Controller
         }
 
         if (customerId != -1)
-            return RedirectToAction("AddNewBankAccount", 
-                "BankAccount", 
-                new {customerId, nic = model.NIC});
+        {
+            TempData["customerId"] = customerId;
+            TempData["nic"] = model.NIC;
+            return RedirectToAction("AddSavingsAccount", 
+                "BankAccount", routeValues: new {customerId = customerId});
+        }
         
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ViewIndividual(int customerId)
+    {
+        var conn = _context.GetConnection();
+        List<IndividualViewModel> res;
+        try
+        {
+            await conn.OpenAsync();
+            res = await _individualRepository.GetIndividualBankAccounts(customerId);
+
+        }finally
+        {
+            await conn.CloseAsync();
+        }
+
+        var branchId = int.Parse(HttpContext.User.FindFirst("BranchId")!.Value);
+
+        var canMakeSavingsAcc = !res.Exists(i => 
+            i.BranchId == branchId && i.BankAccountType == BankAccountType.Savings);
+        var canMakeCurrentAcc = !res.Exists(i =>
+                                    i.BranchId == branchId && i.BankAccountType == BankAccountType.Current);
+        var model = new IndividualBankAccountsViewModelForEmployee()
+        {
+            BankAccounts = res,
+            CanMakeCurrentAcc = canMakeCurrentAcc,
+            CanMakeSavingsAcc = canMakeSavingsAcc,
+            CustomerId = customerId
+        };
         return View(model);
     }
 }

@@ -1,14 +1,18 @@
-﻿using BankingSystem.DBContext;
+﻿using System.Data;
+using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
 using BankingSystem.Models;
+using MySqlConnector;
 
 namespace BankingSystem.Services;
 
 public interface IUserService
 {
     Task<bool> IsInRole(string username, UserType userType);
-    Task<bool> IndividualHasUserAccount(string nic, string bankAccountNumber);
-    Task<bool> RegisterUser(User user, string password);
+    Task<int> IndividualValidationForRegistration(string nic, string bankAccountNumber, string checkMobileNumber);
+    Task<bool> RegisterIndividualUser(User user, string password, int individualId);
+    Task RegisterEmployeeUser(User user, string password, int employeeId);
+    Task<bool> EmployeeValidationForRegistration(int? modelEmployeeId, string modelMobileNumber);
 }
 
 public class UserService : IUserService
@@ -52,58 +56,178 @@ public class UserService : IUserService
         await _dbContext.GetConnection().CloseAsync();
         return res;
     }
-    
-    public async Task<bool> IndividualHasUserAccount(string nic, string bankAccountNumber)
+
+    /// <param name="nic"></param>
+    /// <param name="bankAccountNumber"></param>
+    /// <param name="checkMobileNumber"></param>
+    /// <returns>individual_id if valid else -1</returns>
+    public async Task<int> IndividualValidationForRegistration(string nic, string bankAccountNumber, string checkMobileNumber)
     {
         var conn =  _dbContext.GetConnection();
-        await conn.OpenAsync();
-        bool res = false;
+        var individualId = -1;
+
+        var mobileNumber = "";
         try
         {
+            await conn.OpenAsync();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = 
-                "select check_individual_exists_has_user_account(@nic, @account_no, '', @is_individual);";
+            cmd.CommandText = @"SELECT user_id,
+                   individual_id,
+                   mobile_number
+            FROM (SELECT customer_id FROM bank_account AS b WHERE b.account_no = @acc_no) AS ba
+                     JOIN customer AS c ON ba.customer_id = c.id
+                     JOIN individual AS i ON c.id = i.customer_id
+            WHERE i.nic = @nic";
+            
+            cmd.Parameters.AddWithValue("@acc_no", bankAccountNumber);
             cmd.Parameters.AddWithValue("@nic", nic);
-            cmd.Parameters.AddWithValue("@account_no", bankAccountNumber);
-            cmd.Parameters.AddWithValue("@is_individual", true);
-            res = (bool) await cmd.ExecuteScalarAsync();
+
+            var userId = -1;
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                if (!reader.IsDBNull(reader.GetOrdinal("user_id")))
+                    userId = reader.GetInt32(0);
+                if (userId != -1)
+                    return -1;
+                if (!reader.IsDBNull(reader.GetOrdinal("individual_id")))
+                    individualId = reader.GetInt32(1);
+                else
+                {
+                    throw new Exception("Individual does not exist");
+                }
+                // if individual exists so does mobile number
+                if(individualId == -1)
+                    return -1;
+                
+                mobileNumber = reader.GetString(2);
+            }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            await conn.CloseAsync();
+            throw new Exception(e.Message);
         }
         finally
         {
             await conn.CloseAsync();
         }
-        return (bool) res;
+        if(checkMobileNumber != mobileNumber)
+            throw new Exception("Invalid mobile number");
+        
+        return individualId;
+        
     }
 
-    public async Task<bool> RegisterUser(User user, string password)
+    public async Task<bool> RegisterIndividualUser(User user, string password, int individualId)
     {
         var conn = _dbContext.GetConnection();
         await conn.OpenAsync();
         try
         {
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"INSERT INTO user (user_name, user_type, password_hash) 
-                            VALUES (@user_name, @user_type, @password_hash)";
+            cmd.CommandText = "CALL register_individual_user(@user_name, @password_hash, @individual_id);";
         
             cmd.Parameters.AddWithValue("@user_name", user.UserName);
-            cmd.Parameters.AddWithValue("@user_type", user.UserType);
             cmd.Parameters.AddWithValue("@password_hash", password);
+            cmd.Parameters.AddWithValue("individual_id", individualId);
         
             await cmd.ExecuteNonQueryAsync();
         }
-        catch (Exception e)
+        catch (MySqlException e)
         {
-            Console.WriteLine(e);
-            return false;
+            if (e.SqlState == "45000")
+            {
+                await conn.CloseAsync();
+                throw new Exception("Individual already has a user account");
+            }
         }
         finally
         {
             await conn.CloseAsync();
         }
+        
+        return true;
+    }
+
+    public async Task RegisterEmployeeUser(User user, string password, int employeeId)
+    {
+        var conn = _dbContext.GetConnection();
+        await conn.OpenAsync();
+        try
+        {
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "CALL register_banker_user(@user_name, @password_hash, @employee_id);";
+            cmd.Parameters.AddWithValue("@user_name", user.UserName);
+            cmd.Parameters.AddWithValue("@password_hash", password);
+            cmd.Parameters.AddWithValue("employee_id", employeeId);
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (MySqlException e)
+        {
+            if (e.SqlState == "45000")
+            {
+                await conn.CloseAsync();
+                throw new Exception("Employee already has a user account");
+            }
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
+    }
+
+    public async Task<bool> EmployeeValidationForRegistration(int? modelEmployeeId, string modelMobileNumber)
+    {
+        var conn = _dbContext.GetConnection();
+        var employeeId = -1;
+        var mobileNumber = "";
+        try
+        {
+            await conn.OpenAsync();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = @"SELECT user_id,
+                   employee_id,
+                   mobile_number
+            FROM employee AS e
+            WHERE e.employee_id = @id";
+            
+            cmd.Parameters.AddWithValue("@id", modelEmployeeId);
+
+            var userId = -1;
+            using var reader = await cmd.ExecuteReaderAsync();
+            if (await reader.ReadAsync())
+            {
+                if (!reader.IsDBNull(reader.GetOrdinal("user_id")))
+                    userId = reader.GetInt32(0);
+                if (userId != -1)
+                    throw new Exception("Employee already has a user account");
+                
+                if (!reader.IsDBNull(reader.GetOrdinal("employee_id")))
+                    employeeId = reader.GetInt32(1);
+                else
+                {
+                    throw new Exception("Employee does not exist");
+                }
+                // if employee exists so does mobile number
+                if(employeeId == -1)
+                    return false;
+                
+                mobileNumber = reader.GetString(2);
+            }
+        }
+        catch (Exception e)
+        {
+            await conn.CloseAsync();
+            throw new Exception(e.Message);
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
+        // check if mobile number matches
+        if(modelMobileNumber != mobileNumber)
+            throw new Exception("Invalid mobile number");
         
         return true;
     }

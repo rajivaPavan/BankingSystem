@@ -12,16 +12,19 @@ BEGIN
     SET result_user_id = NULL;
 
     IF is_individual = 1 THEN
-        SELECT user_id, COUNT(individual_id) INTO result_user_id, result_count
+        SELECT user_id, COUNT(individual_id)
+        INTO result_user_id, result_count
         FROM (SELECT customer_id FROM bank_account AS b WHERE b.account_no = p_bankAccount) AS ba
                  JOIN customer AS c ON ba.customer_id = c.id
                  JOIN individual AS i ON c.id = i.customer_id
         WHERE i.nic = p_nic;
     ELSE
-        SELECT i.user_id, COUNT(i.individual_id) INTO result_user_id, result_count
+        SELECT i.user_id, COUNT(i.individual_id)
+        INTO result_user_id, result_count
         FROM organization_individual AS oi
                  JOIN individual AS i ON oi.individual_id = i.individual_id
-        WHERE oi.organization_reg_no = p_business_reg_no AND i.nic = p_nic;
+        WHERE oi.organization_reg_no = p_business_reg_no
+          AND i.nic = p_nic;
     END IF;
 
     IF result_count = 1 AND result_user_id IS NOT NULL THEN
@@ -30,4 +33,27 @@ BEGIN
         RETURN FALSE;
     END IF;
 END;
+
+
+create
+    definer = root@localhost procedure individual_exists_has_user_account(IN p_nic varchar(12),
+                                                                          IN p_bankAccount varchar(16),
+                                                                          OUT o_user_id int, OUT o_individual_id int)
+BEGIN
+    SELECT user_id,
+           individual_id
+    INTO o_user_id, o_individual_id
+    FROM (SELECT customer_id FROM bank_account AS b WHERE b.account_no = p_bankAccount) AS ba
+             JOIN customer AS c ON ba.customer_id = c.id
+             JOIN individual AS i ON c.id = i.customer_id
+    WHERE i.nic = p_nic;
+
+    IF o_user_id IS NULL THEN
+        SET o_user_id = -1;
+    end if;
+
+END;
+
+
+
 

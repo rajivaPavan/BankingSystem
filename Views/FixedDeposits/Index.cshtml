@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Fixed Deposits";
+    Layout = "BankLayout";
+}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">@ViewBag.Title</h1>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <a asp-controller="FixedDeposits" asp-action="ViewFixedDeposits">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="fas fa-money-check"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">View Fixed Deposits</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <a asp-controller="FixedDeposits" asp-action="AddFixedDeposit">
+                    <div class="info-box">
+                        <span class="info-box-icon bg-info">
+                            <i class="fas fa-money-check"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text text-decoration-none">Add Fixed Deposits</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>

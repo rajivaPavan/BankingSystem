@@ -9,6 +9,7 @@ namespace BankingSystem.DbOperations;
 public interface IIndividualRepository : IRepository<Individual>
 {
     Task<IndividualViewModel> GetIndividualInfoForEmployee(string nic);
+    Task Addtransfer(TransferViewModel model);
     Task<List<IndividualViewModel>> GetChildIndividualsByNicAsync(string nic);
     Task<int> AddIndividual(IndividualViewModel model);
 }
@@ -152,5 +153,18 @@ public class IndividualRepository :  Repository, IIndividualRepository
         using var reader = await cmd.ExecuteReaderAsync();
         if (await reader.ReadAsync() == false) return -1;
         return reader.GetInt32("customer_id");
+    }
+
+    public async Task Addtransfer(TransferViewModel model)
+    {
+        var conn = _context.GetConnection();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "CALL add_new_transfer(@from_account_no, @to_account_no, @amount, @reference, @time_stamp)";
+        cmd.Parameters.AddWithValue("@from_account_no", model.SenderAccountId);
+        cmd.Parameters.AddWithValue("@to_account_no", model.RecipientAccountId);
+        cmd.Parameters.AddWithValue("@amount", model.Amount);
+        cmd.Parameters.AddWithValue("@reference", model.Reference);
+        cmd.Parameters.AddWithValue("@time_stamp", DateTime.Now.Date);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

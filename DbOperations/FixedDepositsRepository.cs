@@ -71,38 +71,46 @@ public class FixedDepositsRepository : IFixedDepositsRepository
     public async Task<List<FixedDepositViewModel>?> GetFixedDeposits(int? customerId = null)
     {
         var conn = _context.GetConnection();
-        await conn.OpenAsync();
-        using var cmd = conn.CreateCommand();
-        var queryAll = @"SELECT fd.*, p.*, 
+        var fixedDeposits = new List<FixedDepositViewModel>();
+
+        try
+        {
+            await conn.OpenAsync();
+            using var cmd = conn.CreateCommand();
+            var queryAll = @"SELECT fd.*, p.*, 
             DATE_ADD(opening_date, interval duration month) as maturity_date 
             from fixed_deposit as fd JOIN fd_plan as p 
                 on fd.fd_plan_id = p.fd_plan_id";
-        if (customerId == null)
-        {
-            cmd.CommandText =  queryAll;
-        }
-        else
-        {
-            cmd.CommandText = $"{queryAll} where customer_id = @customerId";
-            cmd.Parameters.AddWithValue("@customerId", customerId);
-        }
-        var reader = await cmd.ExecuteReaderAsync();
-        var fixedDeposits = new List<FixedDepositViewModel>();
-        while (await reader.ReadAsync())
-        {
-            var fixedDeposit = new FixedDepositViewModel
+            if (customerId == null)
             {
-                FdNo = reader.GetInt32("fd_no"),
-                SavingsAccountNumber = reader.GetString("savings_account_no"),
-                Amount = reader.GetDouble("amount"),
-                InterestRate = reader.GetDouble("interest"),
-                DurationInMonths = reader.GetInt32("duration"),
-                OpenDate = reader.GetDateTime("opening_date"),
-                MaturityDate = reader.GetDateTime("maturity_date")
-            };
-            fixedDeposits.Add(fixedDeposit);
+                cmd.CommandText = queryAll;
+            }
+            else
+            {
+                cmd.CommandText = $"{queryAll} where customer_id = @customerId";
+                cmd.Parameters.AddWithValue("@customerId", customerId);
+            }
+
+            var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var fixedDeposit = new FixedDepositViewModel
+                {
+                    FdNo = reader.GetInt32("fd_no"),
+                    SavingsAccountNumber = reader.GetString("savings_account_no"),
+                    Amount = reader.GetDouble("amount"),
+                    InterestRate = reader.GetDouble("interest"),
+                    DurationInMonths = reader.GetInt32("duration"),
+                    OpenDate = reader.GetDateTime("opening_date"),
+                    MaturityDate = reader.GetDateTime("maturity_date")
+                };
+                fixedDeposits.Add(fixedDeposit);
+            }
         }
-        await conn.CloseAsync();
+        finally
+        {
+            await conn.CloseAsync();
+        }
         return fixedDeposits;
     }
 }

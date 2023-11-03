@@ -23,8 +23,8 @@ public class Transaction
 // Enums
 public enum AccountType
 {
-    Savings,
-    Current
+    Current = 0,
+    Savings = 1
 }
 
 public enum TransactionType

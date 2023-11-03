@@ -1,0 +1,69 @@
+﻿@model FinalizeSelfRegisterEmployeeViewModel
+@{
+    ViewBag.Title = "Employee Self-Registration";
+    Layout = "BankLayout";
+}
+
+<div class="register-page">
+    <div class="register-box">
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a asp-action="Index" asp-controller="Home" class="h1"><b>Bank</b>A</a>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">OTP and Registration Form</p>
+                <p class="card-text">An OTP has been sent to the mobile number you submitted in your KYC form.</p>
+    
+                <form asp-action="EmployeeFinalizeSelfRegister" method="post">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control"
+                               asp-for="OTP"
+                               placeholder="Enter OTP" name="otp" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-key"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control"
+                               asp-for="Username"
+                               placeholder="Username" name="username" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-user"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group mb-3">
+                        <input type="password"
+                               asp-for="Password"
+                        class="form-control" placeholder="Password" name="password" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="input-group mb-3">
+                        <input type="password" 
+                               asp-for="ConfirmPassword"
+                               class="form-control" placeholder="Confirm Password" name="confirmPassword" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-lock"></span>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                </form>
+            </div>
+            <!-- /.form-box -->
+        </div><!-- /.card -->
+    </div>
+    <!-- /.register-box -->
+</div>

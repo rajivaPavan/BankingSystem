@@ -1,0 +1,54 @@
+﻿@model BankingSystem.ViewModels.TransferViewModel
+
+@{
+    ViewBag.Title = "Bank Transfer";
+    Layout = "CustomerLayout";
+}
+
+<div class="content-header">
+    
+</div>
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Transfer Money</h3>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Index" method="post">
+                            <div class="form-group">
+                                <label asp-for="SenderAccountId">Sender Account</label>
+                                <select asp-for="SenderAccountId" asp-items="Model.SenderAccounts" class="form-control"></select>
+                            </div>
+        
+                            <div class="form-group">
+                                <label asp-for="RecipientAccountId">Recipient Account</label>
+                                <input asp-for="RecipientAccountId" class="form-control" />
+                            </div>
+        
+                            <div class="form-group">
+                                <label asp-for="Amount">Amount</label>
+                                <input asp-for="Amount" class="form-control" />
+                            </div>
+        
+                            <div class="form-group">
+                                <label asp-for="Reference">Reference</label>
+                                <input asp-for="Reference" class="form-control" />
+                            </div>
+        
+                            <button type="submit" class="btn btn-primary">Transfer</button>
+                        </form>
+                        @if (ViewBag.Message != null || ViewBag.Message == "")
+                        {
+                            <div class="my-2">
+                                <div class="text-success">@ViewBag.Message</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

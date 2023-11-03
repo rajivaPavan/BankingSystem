@@ -47,12 +47,19 @@ public class AuthenticationService : IAuthenticationService
         await _userRepository.SignInAsync(user);
 
         string? branchId = null;
+        string? customerId = null;
         if (user.UserType is UserType.Employee or UserType.Manager)
         {
             // get branch from employee table 
             var id = await _employeeRepository.GetEmployeeBranchByUserId(user.UserId);
             if (id != -1)
                 branchId = id.ToString();
+        }
+        else if(user.UserType is UserType.Customer)
+        {
+            var id = await _userRepository.GetCustomerIdByUserId(user.UserId);
+            if (id != -1)
+                customerId = id.ToString();
         }
         
         await _dbContext.GetConnection().CloseAsync();
@@ -67,6 +74,10 @@ public class AuthenticationService : IAuthenticationService
         {
             // add BranchId claim
             claims.Add(new Claim("BranchId", branchId));
+        }
+        if (customerId != null)
+        {
+            claims.Add(new Claim("CustomerId", customerId));
         }
         
         var claimsIdentity = new ClaimsIdentity(

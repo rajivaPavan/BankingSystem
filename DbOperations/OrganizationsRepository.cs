@@ -53,7 +53,7 @@ public class OrganizationRepository : IOrganizationRepository
         await conn.OpenAsync();
         using var cmd = conn.CreateCommand();
         cmd.CommandText = @"SELECT * FROM organization_individual JOIN individual 
-             ON organization_individual.individual_id = individual.individual_id;";
+             ON organization_individual.individual_id = individual.individual_id WHERE organization_reg_no = @regNo;";
         cmd.Parameters.AddWithValue("@regNo", modelRegNo);
         using var reader = await cmd.ExecuteReaderAsync();
         if (!reader.HasRows)
@@ -87,7 +87,7 @@ public class OrganizationRepository : IOrganizationRepository
         {
             await conn.OpenAsync();
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = @"CALL create_organization_with_individual(
+            cmd.CommandText = @"CALL add_organization_with_individual(
                 @regNo, @name, @address, @companyEmail, @type, @nic,
                 @position, @work_email, @work_phone, @first_name, @last_name, @date_of_birth, @gender);";
             cmd.Parameters.AddWithValue("@regNo", model.RegNo);

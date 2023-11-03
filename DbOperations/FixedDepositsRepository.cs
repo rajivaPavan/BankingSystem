@@ -8,7 +8,7 @@ public interface IFixedDepositsRepository
 {
     public Task<List<FdPlanViewModel>> GetFdPlansAsync();
     public Task AddFixedDepositAsync(AddFixedDepositViewModel addFixedDepositViewModel);
-    Task<List<FixedDepositViewModel>?> GetFixedDeposits();
+    Task<List<FixedDepositViewModel>?> GetFixedDeposits(int? customerId = null);
 }
 
 public class FixedDepositsRepository : IFixedDepositsRepository
@@ -68,15 +68,24 @@ public class FixedDepositsRepository : IFixedDepositsRepository
         await conn.CloseAsync();
     }
 
-    public async Task<List<FixedDepositViewModel>?> GetFixedDeposits()
+    public async Task<List<FixedDepositViewModel>?> GetFixedDeposits(int? customerId = null)
     {
         var conn = _context.GetConnection();
         await conn.OpenAsync();
         using var cmd = conn.CreateCommand();
-        cmd.CommandText = @"SELECT fd.*, p.*, 
+        var queryAll = @"SELECT fd.*, p.*, 
             DATE_ADD(opening_date, interval duration month) as maturity_date 
             from fixed_deposit as fd JOIN fd_plan as p 
-                on fd.fd_plan_id = p.fd_plan_id;";
+                on fd.fd_plan_id = p.fd_plan_id";
+        if (customerId == null)
+        {
+            cmd.CommandText =  queryAll;
+        }
+        else
+        {
+            cmd.CommandText = $"{queryAll} where customer_id = @customerId";
+            cmd.Parameters.AddWithValue("@customerId", customerId);
+        }
         var reader = await cmd.ExecuteReaderAsync();
         var fixedDeposits = new List<FixedDepositViewModel>();
         while (await reader.ReadAsync())

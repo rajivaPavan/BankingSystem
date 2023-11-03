@@ -60,7 +60,7 @@ public class Income
     public int BranchId { get; set; }
     public DateTime OpeningDate { get; set; }
     public double Amount { get; set; }
-    public TransactionType TransactionType { get; set; }
+    public ReportTransactionType ReportTransactionType { get; set; }
 }
 
 public class Outcome
@@ -69,7 +69,7 @@ public class Outcome
     public int BranchId { get; set; }
     public DateTime OpeningDate { get; set; }
     public double Amount { get; set; }
-    public TransactionType TransactionType { get; set; }
+    public ReportTransactionType ReportTransactionType { get; set; }
 }
 
 public class LoanReportViewModel
@@ -92,7 +92,7 @@ public class LoanInstallments
     public int BranchId { get; set; }
 }
    
-public enum TransactionType
+public enum ReportTransactionType
    {
         Income,
         Outgo

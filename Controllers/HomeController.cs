@@ -12,7 +12,7 @@ public class HomeController : Controller
     {
         // return view based on user role
         if (User.IsInRole(UserType.Customer.ToString()))
-            return View("CustomerDashboard");
+            return RedirectToAction("AccountSummary", "CustomerHome");
 
         return View("BankDashboard");
     }

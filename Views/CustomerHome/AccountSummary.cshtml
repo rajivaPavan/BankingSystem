@@ -1,23 +1,44 @@
-@model List<Account>
+@model List<BankingSystem.Models.Account>
+@{
+    Layout = "CustomerLayout";
+    ViewBag.Title = "Account Summary";
+}
 
-    <h1>Account Summary</h1>
+<div class="content-header">
 
-    <table>
-        <thead>
-            <tr>
-                <th>Account Number</th>
-                <th>Balance</th>
-                <th>Account Type</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var account in Model)
-        {
-            <tr>
-                <td>@account.AccountNumber</td>
-                <td>@account.Balance</td>
-                <td>@account.AccountType</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+</div>
+
+<div class="content">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Accounts Summary
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-primary">
+                            <thead>
+                            <tr>
+                                <th>Account Number</th>
+                                <th>Balance</th>
+                                <th>Account Type</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var account in Model)
+                            {
+                                <tr>
+                                    <td>@account.AccountNumber</td>
+                                    <td>@account.Balance</td>
+                                    <td>@account.AccountType</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

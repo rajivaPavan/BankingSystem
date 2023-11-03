@@ -10,4 +10,10 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="MySqlConnector" Version="2.2.7" />
   </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\CustomerLoans\LoanApplications.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\CustomerLoans\LoanProducts.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Transactions\AccountTransactions.cshtml" />
+  </ItemGroup>
 </Project>

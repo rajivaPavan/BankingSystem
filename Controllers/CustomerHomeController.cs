@@ -1,11 +1,14 @@
-﻿using BankingSystem.DBContext;
+﻿using BankingSystem.Constants;
+using BankingSystem.DBContext;
 using BankingSystem.DbOperations;
 using BankingSystem.Models;
 using BankingSystem.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BankingSystem.Controllers;
 
+[Authorize(Policy = Policies.CustomerPolicy)]
 public class CustomerHomeController : Controller
 {
     private readonly AppDbContext _context;

@@ -22,7 +22,7 @@ public class BankRepository : IBankRepository
     public async Task<List<Account>> GetAccounts(int customerId)
     {
         List<Account> accounts = new List<Account>();
-        using var conn = _context.GetConnection();
+        var conn = _context.GetConnection();
         
         using var cmd = conn.CreateCommand();
         cmd.CommandText = "SELECT account_no, balance, account_type FROM bank_account WHERE customer_id = @CustomerId";

@@ -24,7 +24,7 @@ services.AddScoped<IUserRepository, UserRepository>();
 services.AddScoped<IPasswordService, PasswordService>();
 services.AddScoped<IAuthenticationService, AuthenticationService>();
 services.AddScoped<IIndividualRepository, IndividualRepository>();
-services.AddScoped<ITransactionRepository, TransactionRepository>();
+// services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 services.AddScoped<IUserService, UserService>();
 services.AddScoped<IBankAccountRepository, BankAccountRepository>();

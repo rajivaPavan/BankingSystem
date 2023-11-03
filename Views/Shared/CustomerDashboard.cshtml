@@ -1,8 +1,45 @@
-﻿@model dynamic
+﻿@model List<BankingSystem.Models.Account>
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Dashboard";
     Layout = "CustomerLayout";
 }
 
-<h2>title</h2>
+<div class="content-header">
+
+</div>
+
+<div class="content">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Accounts Summary
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-primary">
+                            <thead>
+                            <tr>
+                                <th>Account Number</th>
+                                <th>Balance</th>
+                                <th>Account Type</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var account in Model)
+                            {
+                                <tr>
+                                    <td>@account.AccountNumber</td>
+                                    <td>@account.Balance</td>
+                                    <td>@account.AccountType</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

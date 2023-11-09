@@ -1,0 +1,45 @@
+﻿@model SelfRegistrationEmployeeViewModel
+@{
+    ViewBag.Title = "Employee Self-Registration";
+    Layout = "BankLayout";
+}
+
+<div class="register-page">
+    <div class="register-box">
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a asp-action="Index" asp-controller="Home" class="h1"><b>Bank</b>A</a>
+            </div>
+            <div class="card-body">
+                <p class="login-box-msg">Self Registration Form</p>
+                <p class="card-text">For security purposes, your NIC and mobile number are required.</p>
+    
+                <form asp-action="CustomerSelfRegister" method="post">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" asp-for="NIC" 
+                               placeholder="NIC (National Identity Card)" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-id-card"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input asp-for="MobileNumber"
+                               class="form-control" placeholder="Mobile Phone Number" required>
+                        <div class="input-group-append">
+                            <div class="input-group-text">
+                                <span class="fas fa-phone"></span>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                </form>
+            </div>
+            <!-- /.form-box -->
+        </div><!-- /.card -->
+    </div>
+    <!-- /.register-box -->
+</div>

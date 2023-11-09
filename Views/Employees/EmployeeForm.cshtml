@@ -1,0 +1,55 @@
+﻿@model BankingSystem.ViewModels.EmployeeViewModel
+
+@{
+    ViewBag.Title = "Employee Registration Form";
+    Layout = "BankLayout";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Employee Registration Form</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Please provide the following details:</p>
+
+                        <form asp-action="CreateEmployee" method="post">
+                            <div class="input-group mb-3">
+                                <input asp-for="BranchId" class="form-control" placeholder="Branch ID" required>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <input asp-for="FirstName" class="form-control" placeholder="First Name" required>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <input asp-for="LastName" class="form-control" placeholder="Last Name" required>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <input asp-for="DateOfBirth" class="form-control" placeholder="Date of Birth" type="date" required>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <input asp-for="Gender" class="form-control" placeholder="Gender" required>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <input asp-for="NIC" class="form-control" placeholder="NIC" required>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <input asp-for="Email" class="form-control" placeholder="Email" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

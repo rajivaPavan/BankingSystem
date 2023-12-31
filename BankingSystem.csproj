@@ -17,4 +17,9 @@
     <_ContentIncludedByDefault Remove="Views\CustomerLoans\LoanProducts.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Transactions\AccountTransactions.cshtml" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\lib\" />
+    <Folder Include="wwwroot\plugins\" />
+  </ItemGroup>
 </Project>
